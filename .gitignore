@@ -1,0 +1,11 @@
+# deps / build
+node_modules/
+web/.next/
+web/out/
+
+# tooling state
+.omc/
+*.log
+
+# 91MB source gif — the site uses web/public/main.mp4 rendered from it
+web/src/app/main.gif

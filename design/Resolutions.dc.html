@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Instrument+Serif:ital@0;1&amp;display=swap">
+  <style>
+    body {
+      margin: 0;
+      background: #F4F2ED;
+      font-family: 'Instrument Sans', system-ui, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #0C4884; text-decoration: none; }
+    a:hover { color: #A8823F; }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .serif {
+      font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+      font-weight: 400;
+    }
+    .ph {
+      color: #8A7A55;
+      background: rgba(168, 130, 63, 0.10);
+      border: 1px dashed rgba(168, 130, 63, 0.45);
+      border-radius: 3px;
+      padding: 1px 7px;
+      font-size: 0.86em;
+      letter-spacing: 0.04em;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 7px 13px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .chip-ok { color: #1F6F45; background: rgba(31, 111, 69, 0.09); border: 1px solid rgba(31, 111, 69, 0.28); }
+    .chip-rev { color: #A8823F; background: rgba(168, 130, 63, 0.10); border: 1px solid rgba(168, 130, 63, 0.32); }
+    .chip-wait { color: #7A8090; background: rgba(122, 128, 144, 0.08); border: 1px solid rgba(122, 128, 144, 0.26); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .row {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 2.5fr) minmax(0, 1.5fr) 180px 150px;
+      gap: 24px;
+      align-items: center;
+      padding: 22px 26px;
+      border-bottom: 1px solid rgba(18, 23, 31, 0.1);
+      background: #FFFFFF;
+    }
+    .hrow {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 2.5fr) minmax(0, 1.5fr) 180px 150px;
+      gap: 24px;
+      align-items: center;
+      padding: 14px 26px;
+      background: #EAE7DF;
+      border-bottom: 1px solid rgba(18, 23, 31, 0.14);
+    }
+    .hcell {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: #7A8090;
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #F4F2ED">
+
+  <!-- ============ HEADER ============ -->
+  <div style="position: relative; background: #0A1428; padding: 92px 72px 72px; overflow: hidden">
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(244,242,237,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(244,242,237,0.045) 1px, transparent 1px); background-size: 90px 90px"></div>
+    <div style="position: absolute; top: -260px; right: -180px; width: 820px; height: 820px; border-radius: 50%; background: radial-gradient(circle, rgba(12,72,132,0.5) 0%, rgba(12,72,132,0) 68%)"></div>
+    <img src="emblem-white.png" alt="" style="position: absolute; top: 40px; right: 72px; width: 300px; height: auto; opacity: 0.08">
+    <div style="position: relative; display: flex; flex-direction: column; gap: 26px">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <a href="#" style="font-size: 12px; letter-spacing: 0.06em; color: rgba(244,242,237,0.55)">DAEMUN III</a>
+        <div style="font-size: 12px; color: rgba(244,242,237,0.3)">/</div>
+        <div style="font-size: 12px; letter-spacing: 0.06em; color: #C9A968">Resolutions</div>
+      </div>
+      <h1 class="serif" style="margin: 0; font-size: 82px; line-height: 0.98; letter-spacing: -0.025em; color: #F4F2ED">Approval Panel</h1>
+      <p style="margin: 0; max-width: 660px; font-size: 17px; line-height: 1.68; color: rgba(244,242,237,0.66)">
+        Draft resolutions submitted to the approval panel, with their current status. Approved resolutions become available here for delegates to read before debate.
+      </p>
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px">
+        <div style="width: 7px; height: 7px; border-radius: 50%; background: #C9A968"></div>
+        <div style="font-size: 13px; color: rgba(244,242,237,0.6)">Updated live during the conference</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LEGEND ============ -->
+  <div style="background: #F4F2ED; padding: 28px 72px; border-bottom: 1px solid rgba(18,23,31,0.12); display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 16px">
+      <div style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: #7A8090">Status</div>
+      <div class="chip chip-ok"><span class="dot" style="background: #1F6F45"></span>Approved</div>
+      <div class="chip chip-rev"><span class="dot" style="background: #A8823F"></span>Under review</div>
+      <div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting submission</div>
+    </div>
+    <div style="font-size: 13px; color: #5E6673">Last updated <span class="ph">TIME</span></div>
+  </div>
+
+  <!-- ============ ECOSOC ============ -->
+  <div style="background: #F4F2ED; padding: 76px 72px 0">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid rgba(18,23,31,0.16); margin-bottom: 28px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div class="eyebrow" style="color: #0C4884">ECOSOC</div>
+        <div class="serif" style="font-size: 40px; line-height: 1.06; letter-spacing: -0.02em; color: #12171F">Economic and Social Council</div>
+      </div>
+      <div style="font-size: 13px; color: #5E6673">4 topics</div>
+    </div>
+
+    <div style="border: 1px solid rgba(18,23,31,0.14)">
+      <div class="hrow">
+        <div class="hcell">Topic</div>
+        <div class="hcell">Resolution</div>
+        <div class="hcell">Main submitter</div>
+        <div class="hcell">Status</div>
+        <div class="hcell" style="text-align: right">Document</div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">I</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">Draft resolution 1.1</div>
+        </div>
+        <div style="font-size: 14px; color: #5E6673"><span class="ph">DELEGATION</span></div>
+        <div><div class="chip chip-ok"><span class="dot" style="background: #1F6F45"></span>Approved</div></div>
+        <div style="text-align: right">
+          <a href="#" style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #0C4884; border: 1px solid rgba(12,72,132,0.35); padding: 10px 16px; border-radius: 2px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>PDF</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">II</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">Draft resolution 2.1</div>
+        </div>
+        <div style="font-size: 14px; color: #5E6673"><span class="ph">DELEGATION</span></div>
+        <div><div class="chip chip-rev"><span class="dot" style="background: #A8823F"></span>Under review</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">III</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">No draft submitted</div>
+        </div>
+        <div style="font-size: 14px; color: #A9A294">&mdash;</div>
+        <div><div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+
+      <div class="row" style="border-bottom: none">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">IV</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">No draft submitted</div>
+        </div>
+        <div style="font-size: 14px; color: #A9A294">&mdash;</div>
+        <div><div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ UNOOSA ============ -->
+  <div style="background: #F4F2ED; padding: 76px 72px 96px">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid rgba(18,23,31,0.16); margin-bottom: 28px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div class="eyebrow" style="color: #0C4884">UNOOSA</div>
+        <div class="serif" style="font-size: 40px; line-height: 1.06; letter-spacing: -0.02em; color: #12171F">Office for Outer Space Affairs</div>
+      </div>
+      <div style="font-size: 13px; color: #5E6673">4 topics</div>
+    </div>
+
+    <div style="border: 1px solid rgba(18,23,31,0.14)">
+      <div class="hrow">
+        <div class="hcell">Topic</div>
+        <div class="hcell">Resolution</div>
+        <div class="hcell">Main submitter</div>
+        <div class="hcell">Status</div>
+        <div class="hcell" style="text-align: right">Document</div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">I</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">Draft resolution 1.1</div>
+        </div>
+        <div style="font-size: 14px; color: #5E6673"><span class="ph">DELEGATION</span></div>
+        <div><div class="chip chip-rev"><span class="dot" style="background: #A8823F"></span>Under review</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">II</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">No draft submitted</div>
+        </div>
+        <div style="font-size: 14px; color: #A9A294">&mdash;</div>
+        <div><div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+
+      <div class="row">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">III</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">No draft submitted</div>
+        </div>
+        <div style="font-size: 14px; color: #A9A294">&mdash;</div>
+        <div><div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+
+      <div class="row" style="border-bottom: none">
+        <div class="serif" style="font-size: 22px; color: #C4BEB0">IV</div>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <div style="font-size: 15px; font-weight: 600; color: #12171F"><span class="ph">TOPIC TITLE</span></div>
+          <div style="font-size: 12px; color: #8A8272">No draft submitted</div>
+        </div>
+        <div style="font-size: 14px; color: #A9A294">&mdash;</div>
+        <div><div class="chip chip-wait"><span class="dot" style="background: #7A8090"></span>Awaiting</div></div>
+        <div style="text-align: right"><div style="font-size: 12px; color: #A9A294">&mdash;</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <div style="background: #0A1428; padding: 64px 72px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 16px">
+      <img src="emblem-white.png" alt="" style="width: 48px; height: auto; display: block">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: 0.14em; color: #F4F2ED">DAEMUN III</div>
+        <div class="serif" style="font-size: 16px; font-style: italic; color: #C9A968">From Vulnerability to Voice</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 28px">
+      <a href="#" style="font-size: 13px; color: rgba(244,242,237,0.55)">Committees</a>
+      <a href="#" style="font-size: 13px; color: rgba(244,242,237,0.55)">Secretariat</a>
+      <a href="#" style="font-size: 13px; color: rgba(244,242,237,0.55)">Guide to MUN</a>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #12171f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* DAEMUN brand — blue sampled from the logo */
+  --color-navy: #0a1428;
+  --color-navy-soft: #101c36;
+  --color-brand: #0c4884;
+  --color-gold: #a8823f;
+  --color-gold-soft: #c9a968;
+  --color-ink: #12171f;
+  --color-body: #4a525f;
+  --color-muted: #5e6673;
+  --color-faint: #8a8f99;
+  --color-line: #e5e4e0;
+  --color-wash: #f7f6f4;
+
+  --font-sans: roman, "Times New Roman", serif;
+  --font-serif: roman, "Times New Roman", serif;
+}
+
+/* skiper-UI pack fonts (same files the pack's demos use) */
+@font-face {
+  font-family: "skiper-custom";
+  src: url("/fonts/skiper-custom.woff") format("woff");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: roman;
+  src: url("/fonts/skiper-roman.woff") format("woff");
+  font-display: swap;
+}
+
+.font-custom {
+  font-family: "skiper-custom", Arial, sans-serif;
+}
+.font-roman {
+  font-family: roman, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: roman, "Times New Roman", serif;
+}
+
+::selection {
+  background: #0c4884;
+  color: #ffffff;
+}

@@ -1,0 +1,34 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",        "title": "Homepage",        "x": 0,    "y": 0, "w": 1440, "h": 6500 },
+    { "file": "Secretariat.dc.html", "title": "Secretariat",     "x": 1560, "y": 0, "w": 1440, "h": 4200 },
+    { "file": "Committees.dc.html",  "title": "Committees",      "x": 3120, "y": 0, "w": 1440, "h": 2150, "is_interactive": true },
+    { "file": "Resolutions.dc.html", "title": "Resolutions",     "x": 4680, "y": 0, "w": 1440, "h": 2100 },
+    { "file": "GuideToMUN.dc.html",  "title": "Guide to MUN",    "x": 6240, "y": 0, "w": 1440, "h": 4600 },
+    { "file": "MainMobile.dc.html",  "title": "Homepage mobile", "x": 7800, "y": 0, "w": 390,  "h": 4200 }
+  ],
+  "annotations": [
+    {
+      "id": "direction",
+      "x": 0,
+      "y": -300,
+      "w": 780,
+      "text": "DAEMUN III — design direction\n\nDark navy hero + warm paper body. Blue #0C4884 is sampled straight from your logo; the emblem is knocked out to transparent from Logo Black.png (the white JPG has a Hypic watermark, so I avoided it).\n\nType: Instrument Serif for display, Instrument Sans for text.\nGold #C9A968 is the accent — the 'voice' half of the theme."
+    },
+    {
+      "id": "placeholders",
+      "x": 1560,
+      "y": -300,
+      "w": 760,
+      "text": "Gold dashed boxes = things only you can fill in.\n\nOn the Secretariat page the photos and names are real, from your roster — but every POSITION and GREETING is a placeholder. I don't know who holds which role, so nothing there is an assignment. Romanised names are my best guess; correct them in place."
+    },
+    {
+      "id": "september",
+      "x": 3120,
+      "y": -300,
+      "w": 760,
+      "text": "The two September pages.\n\nCommittees: the ECOSOC / UNOOSA tabs actually work — click them. Everything else is a static mockup.\n\nResolutions: the approval panel shows all three states (approved / under review / awaiting) so you can see how each looks. Those are sample states, not real submissions."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}
