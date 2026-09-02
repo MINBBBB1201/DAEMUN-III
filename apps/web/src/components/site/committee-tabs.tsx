@@ -66,7 +66,7 @@ export function CommitteeTabs({ committees }: { committees: Committee[] }) {
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-2.5 text-[13px] text-white/70">
                 <Users className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-                <span>Head chair &amp; three deputies</span>
+                <span>Head chair &amp; deputy chairs</span>
               </div>
               <div className="flex items-center gap-2.5 text-[13px] text-white/70">
                 <FileText className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} aria-hidden />

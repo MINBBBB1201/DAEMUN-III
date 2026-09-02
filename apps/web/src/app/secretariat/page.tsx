@@ -4,7 +4,6 @@ import type { Person } from "@daemun/shared";
 import { getSite } from "@/lib/site";
 import { DocsPage, type DocsSection } from "@/components/site/docs-page";
 import { PageHero, TBA } from "@/components/site/section";
-import { MemberHoverList } from "@/components/site/member-hover";
 
 export const metadata = { title: "Secretariat" };
 
@@ -21,9 +20,50 @@ function RoleLine({ role }: { role: string }) {
   );
 }
 
+/** Greetings are stored as blank-line separated paragraphs. */
 function Greeting({ person, className }: { person: Person; className?: string }) {
   if (!person.greeting) return null;
-  return <p className={className}>{person.greeting}</p>;
+  const paragraphs = person.greeting
+    .split(/\r?\n\s*\r?\n/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+  return (
+    <div className={className}>
+      {paragraphs.map((text, i) => (
+        <p key={i} className={i > 0 ? "mt-3" : undefined}>
+          {text}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/** Portrait + name + role + full greeting. Used for departments and chairs. */
+function MemberCard({ person }: { person: Person }) {
+  return (
+    <article className="flex flex-col overflow-hidden rounded-sm border border-line bg-white">
+      <div className="relative aspect-[4/5] w-full border-b border-line">
+        {person.photo ? (
+          <Image
+            src={person.photo}
+            alt={person.name}
+            fill
+            sizes="(min-width: 1280px) 300px, (min-width: 640px) 45vw, 90vw"
+            className="object-cover"
+          />
+        ) : (
+          <PhotoPlaceholder />
+        )}
+      </div>
+      <div className="flex flex-col gap-2 p-5">
+        <RoleLine role={person.role} />
+        <div className="text-[19px] leading-[1.15] text-ink">
+          <TBA value={person.name} />
+        </div>
+        <Greeting person={person} className="text-[13px] leading-relaxed text-body" />
+      </div>
+    </article>
+  );
 }
 
 /** Quiet placeholder for a missing portrait. */
@@ -136,7 +176,7 @@ export default async function SecretariatPage() {
       content: (
         <>
           <p className="text-[14px] text-muted">
-            Head &amp; deputy of each department.
+            Heads and deputies of each department.
           </p>
           <div className="flex flex-col gap-12">
             {departments.map((dept) => (
@@ -147,7 +187,11 @@ export default async function SecretariatPage() {
                   </div>
                   <p className="text-[13px] leading-relaxed text-muted">{dept.blurb}</p>
                 </div>
-                <MemberHoverList people={dept.members} />
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {dept.members.map((person) => (
+                    <MemberCard key={person.id} person={person} />
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -164,7 +208,11 @@ export default async function SecretariatPage() {
               {committee.name} &middot; head chair, then deputies.
             </p>
           ) : null}
-          <MemberHoverList people={people} />
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {people.map((person) => (
+              <MemberCard key={person.id} person={person} />
+            ))}
+          </div>
         </>
       ),
     })),
