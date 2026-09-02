@@ -38,34 +38,6 @@ function Greeting({ person, className }: { person: Person; className?: string })
   );
 }
 
-/** Portrait + name + role + full greeting. Used for departments and chairs. */
-function MemberCard({ person }: { person: Person }) {
-  return (
-    <article className="flex flex-col overflow-hidden rounded-sm border border-line bg-white">
-      <div className="relative aspect-[4/5] w-full border-b border-line">
-        {person.photo ? (
-          <Image
-            src={person.photo}
-            alt={person.name}
-            fill
-            sizes="(min-width: 1280px) 300px, (min-width: 640px) 45vw, 90vw"
-            className="object-cover"
-          />
-        ) : (
-          <PhotoPlaceholder />
-        )}
-      </div>
-      <div className="flex flex-col gap-2 p-5">
-        <RoleLine role={person.role} />
-        <div className="text-[19px] leading-[1.15] text-ink">
-          <TBA value={person.name} />
-        </div>
-        <Greeting person={person} className="text-[13px] leading-relaxed text-body" />
-      </div>
-    </article>
-  );
-}
-
 /** Quiet placeholder for a missing portrait. */
 function PhotoPlaceholder() {
   return (
@@ -78,31 +50,31 @@ function PhotoPlaceholder() {
   );
 }
 
-/** Wide horizontal card for the executive office. */
-function ExecutiveCard({ person }: { person: Person }) {
+/** Horizontal member card: small portrait on the left, name/role/greeting on the right. */
+function MemberCard({ person }: { person: Person }) {
   return (
-    <div className="grid grid-cols-[128px_minmax(0,1fr)] overflow-hidden rounded-sm border border-line bg-white sm:grid-cols-[180px_minmax(0,1fr)]">
-      <div className="relative aspect-[4/5] border-r border-line">
+    <article className="group grid grid-cols-[112px_minmax(0,1fr)] overflow-hidden rounded-sm border border-line bg-white sm:grid-cols-[150px_minmax(0,1fr)]">
+      <div className="relative aspect-[4/5] overflow-hidden border-r border-line">
         {person.photo ? (
           <Image
             src={person.photo}
             alt={person.name}
             fill
-            sizes="(min-width: 640px) 180px, 128px"
-            className="object-cover"
+            sizes="(min-width: 640px) 150px, 112px"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
           />
         ) : (
           <PhotoPlaceholder />
         )}
       </div>
-      <div className="flex flex-col justify-center gap-2 p-5 sm:p-7">
+      <div className="flex flex-col gap-2 p-5 sm:p-6">
         <RoleLine role={person.role} />
-        <div className="text-[22px] leading-[1.1] text-ink sm:text-[26px]">
+        <div className="text-[20px] leading-[1.15] text-ink sm:text-[22px]">
           <TBA value={person.name} />
         </div>
-        <Greeting person={person} className="text-[13px] leading-relaxed text-body" />
+        <Greeting person={person} className="mt-1 max-w-[62ch] text-[13.5px] leading-[1.75] text-body" />
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -123,23 +95,23 @@ export default async function SecretariatPage() {
       content: director ? (
         <>
           <p className="text-[14px] text-muted">Faculty supervision.</p>
-          <div className="grid overflow-hidden rounded-sm border border-line bg-white sm:grid-cols-[240px_minmax(0,1fr)]">
-            <div className="relative aspect-[3/2] border-b border-line sm:aspect-[4/5] sm:border-b-0 sm:border-r">
+          <div className="group grid overflow-hidden rounded-sm border border-line bg-white sm:grid-cols-[150px_minmax(0,1fr)]">
+            <div className="relative aspect-[3/2] overflow-hidden border-b border-line sm:aspect-[4/5] sm:border-b-0 sm:border-r">
               {director.photo ? (
                 <Image
                   src={director.photo}
                   alt={director.name}
                   fill
-                  sizes="(min-width: 640px) 240px, 100vw"
-                  className="object-cover"
+                  sizes="(min-width: 640px) 150px, 100vw"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
                 />
               ) : (
                 <PhotoPlaceholder />
               )}
             </div>
-            <div className="flex flex-col justify-center gap-4 p-6 sm:p-10">
+            <div className="flex flex-col justify-center gap-3 p-5 sm:p-6">
               <RoleLine role={director.role} />
-              <div className="text-[30px] leading-[1.06] text-ink sm:text-[36px]">
+              <div className="text-[22px] leading-[1.1] text-ink sm:text-[26px]">
                 <TBA value={director.name} />
               </div>
               <div className="h-px w-10 bg-line" />
@@ -162,9 +134,9 @@ export default async function SecretariatPage() {
           <p className="text-[14px] text-muted">
             Secretary-General &amp; Deputy Secretary-General.
           </p>
-          <div className="grid gap-5 xl:grid-cols-2">
+          <div className="flex flex-col gap-5">
             {executives.map((person) => (
-              <ExecutiveCard key={person.id} person={person} />
+              <MemberCard key={person.id} person={person} />
             ))}
           </div>
         </>
@@ -187,7 +159,7 @@ export default async function SecretariatPage() {
                   </div>
                   <p className="text-[13px] leading-relaxed text-muted">{dept.blurb}</p>
                 </div>
-                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="flex flex-col gap-5">
                   {dept.members.map((person) => (
                     <MemberCard key={person.id} person={person} />
                   ))}
@@ -208,7 +180,7 @@ export default async function SecretariatPage() {
               {committee.name} &middot; head chair, then deputies.
             </p>
           ) : null}
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="flex flex-col gap-5">
             {people.map((person) => (
               <MemberCard key={person.id} person={person} />
             ))}
