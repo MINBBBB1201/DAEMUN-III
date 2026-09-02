@@ -1,0 +1,25 @@
+{
+  "name": "daemun-iii",
+  "private": true,
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter \"./apps/*\" dev",
+    "dev:web": "pnpm --filter @daemun/web dev",
+    "dev:api": "pnpm --filter @daemun/api dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "db:up": "docker compose -f docker-compose.dev.yml up -d",
+    "db:down": "docker compose -f docker-compose.dev.yml down",
+    "db:generate": "pnpm --filter @daemun/db generate",
+    "db:migrate": "pnpm --filter @daemun/db migrate",
+    "db:seed": "pnpm --filter @daemun/db seed",
+    "db:studio": "pnpm --filter @daemun/db studio"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

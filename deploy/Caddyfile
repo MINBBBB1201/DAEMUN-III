@@ -1,0 +1,18 @@
+{$WEB_DOMAIN} {
+	encode zstd gzip
+	# uploaded files live on the API server; expose them under the public site too
+	handle /uploads/* {
+		reverse_proxy api:4000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}
+
+{$API_DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy api:4000
+}

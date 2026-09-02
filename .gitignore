@@ -1,11 +1,23 @@
 # deps / build
 node_modules/
-web/.next/
-web/out/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
 
 # tooling state
 .omc/
 *.log
+.DS_Store
 
-# 91MB source gif — the site uses web/public/main.mp4 rendered from it
-web/src/app/main.gif
+# runtime data (docker volumes / local uploads)
+data/
+apps/api/uploads/
+
+# 91MB source gif — the site uses apps/web/public/main.mp4 rendered from it
+apps/web/src/app/main.gif

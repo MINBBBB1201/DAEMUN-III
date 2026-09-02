@@ -1,0 +1,13 @@
+# Local development: only Postgres in Docker, everything else via `pnpm dev`.
+#   pnpm db:up
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: daemun
+      POSTGRES_USER: daemun
+      POSTGRES_PASSWORD: daemun
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres-dev:/var/lib/postgresql/data

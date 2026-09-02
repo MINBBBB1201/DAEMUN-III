@@ -1,0 +1,28 @@
+{
+  "name": "@daemun/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false --env-file-if-exists=.env src/index.ts",
+    "start": "tsx --env-file-if-exists=.env src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@daemun/db": "workspace:*",
+    "@daemun/shared": "workspace:*",
+    "@hono/node-server": "^2.1.1",
+    "@hono/zod-validator": "^0.9.1",
+    "better-auth": "^1.7.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.13.5",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
+  }
+}

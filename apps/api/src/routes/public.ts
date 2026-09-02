@@ -1,0 +1,109 @@
+import { Hono } from "hono";
+import { asc, eq } from "drizzle-orm";
+import { defaultSite, type Person, type SiteData } from "@daemun/shared";
+import {
+  committees,
+  conference,
+  departments,
+  documents,
+  people,
+  resolutions,
+  scheduleDays,
+  scheduleItems,
+  topics,
+} from "@daemun/db";
+import { db } from "../db";
+
+/** Assemble the single payload the public site renders from. */
+export async function buildSiteData(): Promise<SiteData> {
+  const [confRow] = await db
+    .select()
+    .from(conference)
+    .where(eq(conference.id, "main"))
+    .limit(1);
+
+  const [committeeRows, departmentRows, peopleRows, resolutionRows, dayRows, documentRows] =
+    await Promise.all([
+      db.query.committees.findMany({
+        orderBy: [asc(committees.sortOrder), asc(committees.createdAt)],
+        with: { topics: { orderBy: [asc(topics.sortOrder), asc(topics.createdAt)] } },
+      }),
+      db.query.departments.findMany({
+        orderBy: [asc(departments.sortOrder), asc(departments.createdAt)],
+      }),
+      db.query.people.findMany({
+        orderBy: [asc(people.sortOrder), asc(people.createdAt)],
+      }),
+      db.query.resolutions.findMany({ orderBy: [asc(resolutions.createdAt)] }),
+      db.query.scheduleDays.findMany({
+        orderBy: [asc(scheduleDays.sortOrder), asc(scheduleDays.createdAt)],
+        with: {
+          items: { orderBy: [asc(scheduleItems.sortOrder), asc(scheduleItems.createdAt)] },
+        },
+      }),
+      db.query.documents.findMany({
+        orderBy: [asc(documents.sortOrder), asc(documents.createdAt)],
+      }),
+    ]);
+
+  const strip = <T extends { createdAt: Date; updatedAt: Date }>(row: T) => {
+    const { createdAt: _c, updatedAt: _u, ...rest } = row;
+    return rest;
+  };
+
+  const persons: Person[] = peopleRows.map(strip);
+  const bySection = (s: Person["section"]) => persons.filter((p) => p.section === s);
+
+  const slugById = new Map(committeeRows.map((c) => [c.id, c.slug]));
+  const chairs: Record<string, Person[]> = {};
+  for (const c of committeeRows) chairs[c.slug] = [];
+  for (const p of bySection("chair")) {
+    const slug = p.committeeId ? slugById.get(p.committeeId) : undefined;
+    if (slug) chairs[slug]!.push(p);
+  }
+
+  const resolutionsBySlug: Record<string, SiteData["resolutions"][string]> = {};
+  for (const c of committeeRows) resolutionsBySlug[c.slug] = [];
+  for (const r of resolutionRows) {
+    const slug = slugById.get(r.committeeId);
+    if (!slug) continue;
+    const { createdAt: _c, ...rest } = r;
+    resolutionsBySlug[slug]!.push({ ...rest, updatedAt: r.updatedAt.toISOString() });
+  }
+
+  const { id: _id, createdAt: _c, updatedAt: _u, ...conf } = confRow ?? {
+    id: "main",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...defaultSite.conference,
+  };
+
+  return {
+    conference: conf,
+    secretariat: {
+      director: bySection("director")[0] ?? null,
+      executives: bySection("executive"),
+      departments: departmentRows.map((d) => ({
+        ...strip(d),
+        members: bySection("department").filter((p) => p.departmentId === d.id),
+      })),
+      chairs,
+    },
+    committees: committeeRows.map(({ topics: ts, ...c }) => ({
+      ...strip(c),
+      topics: ts.map(strip),
+    })),
+    resolutions: resolutionsBySlug,
+    schedule: dayRows.map(({ items, ...d }) => ({
+      ...strip(d),
+      items: items.map(strip),
+    })),
+    documents: documentRows.map(strip),
+  };
+}
+
+export const publicRoutes = new Hono().get("/site", async (c) => {
+  const data = await buildSiteData();
+  c.header("Cache-Control", "public, max-age=15, stale-while-revalidate=60");
+  return c.json(data);
+});
