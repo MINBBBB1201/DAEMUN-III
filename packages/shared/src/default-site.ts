@@ -78,8 +78,8 @@ const departments: SiteData["secretariat"]["departments"] = [
           "We look forward to welcoming and supporting all of you at DAEMUN III!",
         ),
       }),
-      p("kim-minchan-a", "Minchan Kim", "Deputy Head of Technology", "department", {
-        photo: "/profiles/kim-minchan-a.jpg",
+      p("kim-minchan-b", "Minchan Kim", "Deputy Head of Technology", "department", {
+        photo: "/profiles/kim-minchan-b.jpg",
         departmentId: "technology",
         sortOrder: 1,
         greeting: g(
@@ -182,8 +182,8 @@ const chairs: Record<string, Person[]> = {
         "As your Head Chair, I promise to create an inclusive and supportive environment where each of you can grow and shine. I look forward to meeting you all!",
       ),
     }),
-    p("kim-minchan-b", "Minchan Kim", "Deputy Chair", "chair", {
-      photo: "/profiles/kim-minchan-b.jpg",
+    p("kim-minchan-a", "Minchan Kim", "Deputy Chair", "chair", {
+      photo: "/profiles/kim-minchan-a.jpg",
       committeeId: "ecosoc",
       sortOrder: 1,
       greeting: g(
