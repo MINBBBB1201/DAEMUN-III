@@ -8,6 +8,10 @@ const str = z.string().trim();
 const optStr = str.nullable().optional();
 const sortOrder = z.number().int().min(0).optional();
 
+// PATCH용 *UpdateSchema는 default를 붙이기 전의 "*Fields"를 partial()해서 만든다.
+// createSchema.partial()은 .default() 필드를 키 부재 시 재적용해서, 한 필드만
+// 수정해도 나머지가 기본값으로 덮어써지는 버그가 있다 (Zod).
+
 /* ------------------------------------------------------------------ */
 /*  Conference (singleton)                                             */
 /* ------------------------------------------------------------------ */
@@ -57,17 +61,20 @@ export const personSchema = z.object({
 });
 export type Person = z.infer<typeof personSchema>;
 
-export const personCreateSchema = z.object({
+const personFields = {
   name: str.min(1),
-  role: str.default(""),
+  role: str,
   photo: optStr,
   greeting: optStr,
   section: personSectionSchema,
   departmentId: optStr,
   committeeId: optStr,
   sortOrder,
-});
-export const personUpdateSchema = personCreateSchema.partial();
+};
+export const personCreateSchema = z
+  .object(personFields)
+  .extend({ role: str.default("") });
+export const personUpdateSchema = z.object(personFields).partial();
 
 export const departmentSchema = z.object({
   id: str,
@@ -76,12 +83,11 @@ export const departmentSchema = z.object({
   sortOrder: z.number().int(),
 });
 export type Department = z.infer<typeof departmentSchema>;
-export const departmentCreateSchema = z.object({
-  name: str.min(1),
-  blurb: str.default(""),
-  sortOrder,
-});
-export const departmentUpdateSchema = departmentCreateSchema.partial();
+const departmentFields = { name: str.min(1), blurb: str, sortOrder };
+export const departmentCreateSchema = z
+  .object(departmentFields)
+  .extend({ blurb: str.default("") });
+export const departmentUpdateSchema = z.object(departmentFields).partial();
 
 /* ------------------------------------------------------------------ */
 /*  Committees & topics                                                */
@@ -97,14 +103,17 @@ export const topicSchema = z.object({
   sortOrder: z.number().int(),
 });
 export type Topic = z.infer<typeof topicSchema>;
-export const topicCreateSchema = z.object({
+const topicFields = {
   committeeId: str,
-  title: str.default("TBA"),
-  summary: str.default(""),
+  title: str,
+  summary: str,
   report: optStr,
   sortOrder,
-});
-export const topicUpdateSchema = topicCreateSchema.partial();
+};
+export const topicCreateSchema = z
+  .object(topicFields)
+  .extend({ title: str.default("TBA"), summary: str.default("") });
+export const topicUpdateSchema = z.object(topicFields).partial();
 
 export const committeeSchema = z.object({
   id: str,
@@ -118,16 +127,13 @@ export const committeeSchema = z.object({
   sortOrder: z.number().int(),
 });
 export type Committee = z.infer<typeof committeeSchema>;
-export const committeeCreateSchema = committeeSchema
+const committeeFields = committeeSchema
   .omit({ id: true, sortOrder: true })
-  .extend({
-    image: optStr,
-    sourceLabel: optStr,
-    sourceUrl: optStr,
-    description: str.default(""),
-    sortOrder,
-  });
-export const committeeUpdateSchema = committeeCreateSchema.partial();
+  .extend({ image: optStr, sourceLabel: optStr, sourceUrl: optStr, sortOrder }).shape;
+export const committeeCreateSchema = z
+  .object(committeeFields)
+  .extend({ description: str.default("") });
+export const committeeUpdateSchema = z.object(committeeFields).partial();
 
 export type CommitteeWithTopics = Committee & { topics: Topic[] };
 
@@ -150,16 +156,21 @@ export const resolutionSchema = z.object({
   updatedAt: z.string(),
 });
 export type Resolution = z.infer<typeof resolutionSchema>;
-export const resolutionCreateSchema = z.object({
+const resolutionFields = {
   committeeId: str,
   topicId: str,
+  label: str,
+  submitter: str,
+  status: resolutionStatusSchema,
+  document: optStr,
+  sortOrder,
+};
+export const resolutionCreateSchema = z.object(resolutionFields).extend({
   label: str.default(""),
   submitter: str.default(""),
   status: resolutionStatusSchema.default("awaiting"),
-  document: optStr,
-  sortOrder,
 });
-export const resolutionUpdateSchema = resolutionCreateSchema.partial();
+export const resolutionUpdateSchema = z.object(resolutionFields).partial();
 
 /* ------------------------------------------------------------------ */
 /*  Schedule                                                           */
@@ -173,13 +184,11 @@ export const scheduleItemSchema = z.object({
   sortOrder: z.number().int(),
 });
 export type ScheduleItem = z.infer<typeof scheduleItemSchema>;
-export const scheduleItemCreateSchema = z.object({
-  dayId: str,
-  time: str.default("TBA"),
-  event: str.min(1),
-  sortOrder,
-});
-export const scheduleItemUpdateSchema = scheduleItemCreateSchema.partial();
+const scheduleItemFields = { dayId: str, time: str, event: str.min(1), sortOrder };
+export const scheduleItemCreateSchema = z
+  .object(scheduleItemFields)
+  .extend({ time: str.default("TBA") });
+export const scheduleItemUpdateSchema = z.object(scheduleItemFields).partial();
 
 export const scheduleDaySchema = z.object({
   id: str,
@@ -188,12 +197,11 @@ export const scheduleDaySchema = z.object({
   sortOrder: z.number().int(),
 });
 export type ScheduleDay = z.infer<typeof scheduleDaySchema>;
-export const scheduleDayCreateSchema = z.object({
-  day: str.min(1),
-  date: str.default("TBA"),
-  sortOrder,
-});
-export const scheduleDayUpdateSchema = scheduleDayCreateSchema.partial();
+const scheduleDayFields = { day: str.min(1), date: str, sortOrder };
+export const scheduleDayCreateSchema = z
+  .object(scheduleDayFields)
+  .extend({ date: str.default("TBA") });
+export const scheduleDayUpdateSchema = z.object(scheduleDayFields).partial();
 
 export type ScheduleDayWithItems = ScheduleDay & { items: ScheduleItem[] };
 
@@ -211,15 +219,20 @@ export const documentSchema = z.object({
   sortOrder: z.number().int(),
 });
 export type SiteDocument = z.infer<typeof documentSchema>;
-export const documentCreateSchema = z.object({
+const documentFields = {
   title: str.min(1),
-  blurb: str.default(""),
+  blurb: str,
   file: str.min(1),
+  kind: str,
+  size: str,
+  sortOrder,
+};
+export const documentCreateSchema = z.object(documentFields).extend({
+  blurb: str.default(""),
   kind: str.default("PDF"),
   size: str.default(""),
-  sortOrder,
 });
-export const documentUpdateSchema = documentCreateSchema.partial();
+export const documentUpdateSchema = z.object(documentFields).partial();
 
 /* ------------------------------------------------------------------ */
 /*  Reorder                                                            */
