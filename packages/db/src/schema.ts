@@ -138,6 +138,22 @@ export const resolutions = pgTable("resolutions", {
 });
 
 /* ------------------------------------------------------------------ */
+/*  FAQ (안내 챗봇 지식베이스 — SiteData에는 들어가지 않는다)          */
+/* ------------------------------------------------------------------ */
+
+export const faqs = pgTable("faqs", {
+  id: id(),
+  question: text("question").notNull().default(""),
+  answer: text("answer").notNull().default(""),
+  /** 자유 텍스트 분류 (예: "신청", "일정", "회비"). 빈 값 허용. */
+  category: text("category").notNull().default(""),
+  /** false면 챗봇 컨텍스트 검색에서 제외 — 초안 상태로 저장해 둘 때. */
+  published: boolean("published").notNull().default(true),
+  sortOrder: sortOrder(),
+  ...timestamps,
+});
+
+/* ------------------------------------------------------------------ */
 /*  Schedule                                                           */
 /* ------------------------------------------------------------------ */
 

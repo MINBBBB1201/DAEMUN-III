@@ -235,6 +235,36 @@ export const documentCreateSchema = z.object(documentFields).extend({
 export const documentUpdateSchema = z.object(documentFields).partial();
 
 /* ------------------------------------------------------------------ */
+/*  FAQ (안내 챗봇 지식베이스 — SiteData에는 포함되지 않는다)          */
+/* ------------------------------------------------------------------ */
+
+export const faqSchema = z.object({
+  id: str,
+  question: str,
+  answer: str,
+  category: str,
+  published: z.boolean(),
+  sortOrder: z.number().int(),
+  updatedAt: z.string(),
+});
+export type Faq = z.infer<typeof faqSchema>;
+
+const faqFields = {
+  question: str.min(1),
+  answer: str,
+  category: str,
+  published: z.boolean(),
+  sortOrder,
+};
+export const faqCreateSchema = z.object(faqFields).extend({
+  question: str.min(1).default("새 질문"),
+  answer: str.default(""),
+  category: str.default(""),
+  published: z.boolean().default(true),
+});
+export const faqUpdateSchema = z.object(faqFields).partial();
+
+/* ------------------------------------------------------------------ */
 /*  Reorder                                                            */
 /* ------------------------------------------------------------------ */
 
