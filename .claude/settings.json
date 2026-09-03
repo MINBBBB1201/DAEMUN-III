@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git fetch:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git ls-remote:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git remote -v)",
+      "Bash(git remote show:*)",
+      "Bash(pnpm install --frozen-lockfile)",
+      "Bash(pnpm -r typecheck)",
+      "Bash(pnpm -r lint)",
+      "Bash(pnpm --filter @daemun/web typecheck)",
+      "Bash(pnpm --filter @daemun/web lint)",
+      "Bash(pnpm --filter @daemun/admin typecheck)",
+      "Bash(pnpm --filter @daemun/admin lint)",
+      "Bash(pnpm --filter @daemun/api typecheck)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh auth status)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(gh pr merge:*)"
+    ]
+  }
+}
