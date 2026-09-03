@@ -26,3 +26,7 @@ yarn-error.log*
 
 *.tsbuildinfo
 next-env.d.ts
+
+# next dev가 자동 생성 (apps/web은 추적하지만 admin은 안 함)
+AGENTS.md
+CLAUDE.md
