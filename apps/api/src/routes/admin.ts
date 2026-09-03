@@ -9,6 +9,8 @@ import {
   departmentUpdateSchema,
   documentCreateSchema,
   documentUpdateSchema,
+  faqCreateSchema,
+  faqUpdateSchema,
   personCreateSchema,
   personUpdateSchema,
   resolutionCreateSchema,
@@ -25,6 +27,7 @@ import {
   conference,
   departments,
   documents,
+  faqs,
   people,
   resolutions,
   scheduleDays,
@@ -123,6 +126,12 @@ export const adminRoutes = new Hono()
   .route(
     "/documents",
     crudRoutes({ table: documents, create: documentCreateSchema, update: documentUpdateSchema }),
+  )
+
+  /* -- FAQ (안내 챗봇 지식베이스, SiteData 밖) ----------------------- */
+  .route(
+    "/faqs",
+    crudRoutes({ table: faqs, create: faqCreateSchema, update: faqUpdateSchema }),
   )
 
   /* -- files ---------------------------------------------------------- */

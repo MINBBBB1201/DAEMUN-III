@@ -12,6 +12,7 @@ const NAV = [
   { href: "/dashboard/resolutions", label: "결의안 현황판" },
   { href: "/dashboard/secretariat", label: "사무국" },
   { href: "/dashboard/conference", label: "회의 정보" },
+  { href: "/dashboard/faqs", label: "FAQ" },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
