@@ -1,9 +1,15 @@
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { heartbeat } from "../lib/presence";
 import { asc, eq } from "drizzle-orm";
-import { defaultSite, type Person, type SiteData } from "@daemun/shared";
+import {
+  chatRequestSchema,
+  defaultSite,
+  type Person,
+  type SiteData,
+} from "@daemun/shared";
 import {
   committees,
   conference,
@@ -16,6 +22,17 @@ import {
   topics,
 } from "@daemun/db";
 import { db } from "../db";
+import {
+  buildSystemPrompt,
+  ChatBlockedError,
+  ChatUnavailableError,
+  ChatUpstreamError,
+  generateReply,
+} from "../lib/chat";
+import { logChat } from "../lib/chat-log";
+import { clientIp } from "../lib/client-ip";
+import { renderFaqContext, searchFaqs } from "../lib/faq-search";
+import { rateLimit } from "../lib/rate-limit";
 
 type BuildOptions = {
   /**
@@ -122,6 +139,10 @@ export async function buildSiteData(opts: BuildOptions = {}): Promise<SiteData> 
 
 const presenceSchema = z.object({ id: z.string().min(8).max(64) });
 
+/** 안내 챗봇 응답 하나를 못 만들었을 때 보여줄 기본 문구. */
+const CHAT_FALLBACK =
+  "지금은 답변을 드리기 어려워요. 잠시 후 다시 시도하시거나, DAEMUN 공식 인스타그램/이메일로 문의해주세요.";
+
 export const publicRoutes = new Hono()
   .get("/site", async (c) => {
     const data = await buildSiteData({ publicView: true });
@@ -132,4 +153,80 @@ export const publicRoutes = new Hono()
   .post("/presence", zValidator("json", presenceSchema), (c) => {
     heartbeat(c.req.valid("json").id);
     return c.body(null, 204);
-  });
+  })
+
+  /**
+   * 안내 챗봇. 무상태 — 프론트가 messages 배열에 대화 전체를 담아 보낸다.
+   * 마지막 user 메시지로 공개 FAQ를 검색해 컨텍스트를 채우고 Gemini에 넘긴다.
+   * 개인정보 DB(신청서 등)는 절대 참조하지 않는다 (설계안 §3-3).
+   */
+  .post(
+    "/chat",
+    bodyLimit({
+      maxSize: 64 * 1024,
+      onError: (c) =>
+        c.json({ reply: "메시지가 너무 깁니다. 짧게 나눠서 물어봐 주세요." }, 413),
+    }),
+    zValidator("json", chatRequestSchema),
+    async (c) => {
+      // 분당 10회 / IP — 남용·비용 폭탄 방지 (설계안 §3-3)
+      const limited = rateLimit(`chat:${clientIp(c)}`, 10, 60_000);
+      if (!limited.ok) {
+        c.header("Retry-After", String(limited.retryAfterSec));
+        return c.json(
+          { reply: "메시지를 너무 빠르게 보내고 계세요. 잠시 후 다시 시도해주세요." },
+          429,
+        );
+      }
+
+      const { messages } = c.req.valid("json");
+      if (messages[messages.length - 1]?.role !== "user") {
+        return c.json({ error: "last message must be from the user" }, 400);
+      }
+      const lastUser = messages[messages.length - 1]!.content;
+
+      const [hits, [confRow]] = await Promise.all([
+        searchFaqs(lastUser, 5),
+        db.select().from(conference).where(eq(conference.id, "main")).limit(1),
+      ]);
+
+      const contact = {
+        email: confRow?.email && confRow.email !== "TBA" ? confRow.email : "운영진 이메일",
+        instagram: confRow?.instagram ?? "@daemun_official",
+        instagramUrl: confRow?.instagramUrl ?? "#",
+      };
+
+      const systemPrompt = buildSystemPrompt(renderFaqContext(hits), contact);
+
+      try {
+        const reply = await generateReply(messages, systemPrompt);
+        logChat({ question: lastUser, answer: reply, outcome: "answered", faqHits: hits.length });
+        return c.json({ reply });
+      } catch (err) {
+        if (err instanceof ChatUnavailableError) {
+          const reply = "안내 챗봇이 아직 설정되지 않았어요. 운영진에게 문의해주세요.";
+          logChat({ question: lastUser, answer: reply, outcome: "unavailable", faqHits: hits.length });
+          return c.json({ reply }, 503);
+        }
+        if (err instanceof ChatBlockedError) {
+          console.warn("[chat] blocked:", err.message);
+          const reply =
+            "그 질문에는 답변을 드리기 어려워요. 동아리 소개나 신청 절차, 일정 같은 걸 물어봐 주세요.";
+          logChat({ question: lastUser, answer: reply, outcome: "blocked", faqHits: hits.length });
+          // 서버 잘못이 아니라 모델이 거절한 것 — 위젯이 오류로 처리하지 않게 200.
+          return c.json({ reply }, 200);
+        }
+        if (err instanceof ChatUpstreamError) {
+          console.warn("[chat] upstream:", err.message);
+          logChat({
+            question: lastUser,
+            answer: CHAT_FALLBACK,
+            outcome: "error",
+            faqHits: hits.length,
+          });
+          return c.json({ reply: CHAT_FALLBACK }, 502);
+        }
+        throw err;
+      }
+    },
+  );

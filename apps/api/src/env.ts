@@ -49,6 +49,19 @@ export const env = {
     from: process.env.MAIL_FROM ?? "DAEMUN III <no-reply@daemun.local>",
   },
 
+  /**
+   * 안내 챗봇(POST /api/chat)이 쓰는 Gemini API. GEMINI_API_KEY가 없으면
+   * 엔드포인트는 503과 안내 문구를 돌려준다 — 키 없이도 나머지는 동작.
+   * 무료 키: https://aistudio.google.com/apikey
+   *
+   * 모델 기본값 `gemini-2.5-flash` — 무료 티어에 있고 성숙해서 가용성이 안정적.
+   * (flash-lite-latest = 최신 모델이라 "high demand" 503이 잦음.) GEMINI_MODEL로 교체.
+   */
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY ?? "",
+    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+  },
+
   uploadDir: path.resolve(process.env.UPLOAD_DIR ?? "uploads"),
   maxUploadBytes: Number(process.env.MAX_UPLOAD_MB ?? 25) * 1024 * 1024,
 

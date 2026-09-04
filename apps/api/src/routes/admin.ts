@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { asc, count, eq, sql } from "drizzle-orm";
+import { asc, count, desc, eq, sql } from "drizzle-orm";
 import {
   committeeCreateSchema,
   committeeUpdateSchema,
@@ -23,6 +23,7 @@ import {
   topicUpdateSchema,
 } from "@daemun/shared";
 import {
+  chatLogs,
   committees,
   conference,
   departments,
@@ -167,6 +168,21 @@ export const adminRoutes = new Hono()
     "/faqs",
     crudRoutes({ table: faqs, create: faqCreateSchema, update: faqUpdateSchema }),
   )
+
+  /* -- 챗봇 질문-답변 로그 (읽기 + 전체 삭제) ----------------------- */
+  .get("/chat-logs", async (c) => {
+    const limit = Math.max(1, Math.min(Math.floor(Number(c.req.query("limit"))) || 200, 500));
+    const rows = await db
+      .select()
+      .from(chatLogs)
+      .orderBy(desc(chatLogs.createdAt))
+      .limit(limit);
+    return c.json(rows);
+  })
+  .delete("/chat-logs", async (c) => {
+    await db.delete(chatLogs);
+    return c.json({ ok: true });
+  })
 
   /* -- files ---------------------------------------------------------- */
   .route("/uploads", uploadRoutes);
