@@ -13,8 +13,8 @@ export default function SecretariatPage() {
         <div>
           <h1 className="text-lg font-semibold">Secretariat</h1>
           <p className="mt-0.5 text-xs text-neutral-500">
-            Departments and people, photos, greetings, and order. Saving
-            reflects immediately on the public site.
+            Departments and people, photos, greetings, committee chairs, and
+            order. Saving reflects immediately on the public site.
           </p>
         </div>
         <button
