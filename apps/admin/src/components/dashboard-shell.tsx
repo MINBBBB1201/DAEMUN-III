@@ -19,6 +19,7 @@ const NAV = [
   { href: "/dashboard/accounts", label: "Accounts" },
   { href: "/dashboard/faqs", label: "FAQ" },
   { href: "/dashboard/chat-logs", label: "Chat logs" },
+  { href: "/dashboard/preview", label: "Preview" },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
