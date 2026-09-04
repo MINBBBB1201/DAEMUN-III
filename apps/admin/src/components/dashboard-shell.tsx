@@ -13,6 +13,7 @@ const NAV = [
   { href: "/dashboard/secretariat", label: "사무국" },
   { href: "/dashboard/conference", label: "회의 정보" },
   { href: "/dashboard/committees", label: "위원회 · 의제" },
+  { href: "/dashboard/accounts", label: "계정" },
   { href: "/dashboard/faqs", label: "FAQ" },
 ];
 
