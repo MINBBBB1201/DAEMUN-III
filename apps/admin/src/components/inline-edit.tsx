@@ -103,7 +103,7 @@ export function InlineText({
       }}
       className={cn(
         "w-full rounded border border-transparent bg-transparent px-1.5 py-1 text-sm",
-        "hover:border-neutral-300 focus:border-neutral-500 focus:bg-white focus:outline-none",
+        "hover:border-line focus:border-brand/50 focus:bg-white focus:outline-none",
         pending && "opacity-50",
         className,
       )}
@@ -138,8 +138,8 @@ export function InlineTextarea({
         }
       }}
       className={cn(
-        "w-full resize-y rounded border border-neutral-200 bg-white px-2 py-1.5 text-sm leading-relaxed",
-        "focus:border-neutral-500 focus:outline-none",
+        "w-full resize-y rounded border border-line bg-white px-2 py-1.5 text-sm leading-relaxed",
+        "focus:border-brand/50 focus:outline-none",
         pending && "opacity-50",
         className,
       )}

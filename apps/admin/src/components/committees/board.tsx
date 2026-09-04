@@ -12,6 +12,9 @@ import {
   useUploadTopicReport,
 } from "@/lib/committees";
 import { InlineText, InlineTextarea } from "@/components/inline-edit";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 
@@ -34,8 +37,8 @@ export function CommitteesBoard({ site }: { site: SiteData }) {
       ))}
 
       <div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           disabled={create.isPending}
           onClick={() =>
             create.mutate({
@@ -44,12 +47,11 @@ export function CommitteesBoard({ site }: { site: SiteData }) {
               name: "New Committee",
             })
           }
-          className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
         >
           + Add committee
-        </button>
+        </Button>
         {create.error && (
-          <p className="mt-1 text-xs text-red-600">{msg(create.error)}</p>
+          <p className="mt-1 text-xs text-[#b23b3b]">{msg(create.error)}</p>
         )}
       </div>
     </div>
@@ -83,8 +85,8 @@ function CommitteeCard({
     update.mutateAsync({ id: committee.id, patch: p });
 
   return (
-    <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <header className="flex items-start gap-3 border-b border-neutral-200 bg-neutral-50 p-4">
+    <Card className="overflow-hidden">
+      <header className="flex items-start gap-3 border-b border-line bg-wash/60 p-4">
         <ImageThumb committee={committee} />
 
         <div className="min-w-0 flex-1 space-y-1.5">
@@ -94,7 +96,7 @@ function CommitteeCard({
               value={committee.code}
               placeholder="e.g. ECOSOC"
               pending={update.isPending}
-              className="w-28 border-neutral-300 font-semibold"
+              className="w-28 border-line font-semibold"
               onCommit={(code) => patch({ code })}
             />
             <InlineText
@@ -102,7 +104,7 @@ function CommitteeCard({
               value={committee.name}
               placeholder="Full name"
               pending={update.isPending}
-              className="flex-1 border-neutral-300"
+              className="flex-1 border-line"
               onCommit={(name) => patch({ name })}
             />
           </div>
@@ -111,7 +113,7 @@ function CommitteeCard({
             value={committee.slug}
             placeholder="Slug (URL/resolution key, lowercase letters, digits, hyphens)"
             pending={update.isPending}
-            className="border-neutral-300 text-xs"
+            className="border-line text-xs"
             onCommit={(slug) => patch({ slug })}
           />
         </div>
@@ -145,7 +147,7 @@ function CommitteeCard({
         </div>
       </header>
 
-      <div className="space-y-3 border-b border-neutral-100 p-4">
+      <div className="space-y-3 border-b border-line/60 p-4">
         <Labeled label="Description">
           <InlineTextarea
             ariaLabel="Description"
@@ -163,7 +165,7 @@ function CommitteeCard({
               value={committee.sourceLabel ?? ""}
               placeholder="e.g. ecosoc.un.org"
               pending={update.isPending}
-              className="border-neutral-300"
+              className="border-line"
               onCommit={(v) => patch({ sourceLabel: v || null })}
             />
           </Labeled>
@@ -173,16 +175,16 @@ function CommitteeCard({
               value={committee.sourceUrl ?? ""}
               placeholder="https://…"
               pending={update.isPending}
-              className="border-neutral-300"
+              className="border-line"
               onCommit={(v) => patch({ sourceUrl: v || null })}
             />
           </Labeled>
         </div>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && <p className="text-xs text-[#b23b3b]">{err}</p>}
       </div>
 
       <Topics committee={committee} />
-    </section>
+    </Card>
   );
 }
 
@@ -209,12 +211,12 @@ function ImageThumb({ committee }: { committee: CommitteeWithTopics }) {
 
   return (
     <div className="w-24 shrink-0">
-      <div className="relative aspect-video overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+      <div className="relative aspect-video overflow-hidden rounded-lg border border-line bg-wash">
         {committee.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={committee.image} alt="" className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full items-center justify-center text-[10px] text-neutral-400">
+          <div className="flex h-full items-center justify-center text-[10px] text-faint">
             No image
           </div>
         )}
@@ -234,7 +236,7 @@ function ImageThumb({ committee }: { committee: CommitteeWithTopics }) {
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+          className="text-muted hover:text-ink disabled:opacity-50"
         >
           {upload.isPending ? "Uploading…" : committee.image ? "Replace" : "Upload image"}
         </button>
@@ -243,15 +245,15 @@ function ImageThumb({ committee }: { committee: CommitteeWithTopics }) {
             type="button"
             disabled={busy}
             onClick={() => update.mutate({ id: committee.id, patch: { image: null } })}
-            className="text-neutral-400 hover:text-red-600 disabled:opacity-50"
+            className="text-faint hover:text-[#b23b3b] disabled:opacity-50"
           >
             Delete
           </button>
         )}
       </div>
-      {localErr && <p className="text-[11px] text-red-600">{localErr}</p>}
+      {localErr && <p className="text-[11px] text-[#b23b3b]">{localErr}</p>}
       {(upload.error || update.error) && (
-        <p className="text-[11px] text-red-600">
+        <p className="text-[11px] text-[#b23b3b]">
           {msg(upload.error) ?? msg(update.error)}
         </p>
       )}
@@ -268,21 +270,16 @@ function Topics({ committee }: { committee: CommitteeWithTopics }) {
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-medium text-neutral-500">Topics</span>
-        <button
-          type="button"
-          disabled={create.isPending}
-          onClick={() => create.mutate({ committeeId: committee.id })}
-          className="rounded-md border border-neutral-300 px-2.5 py-1 text-xs hover:bg-neutral-50 disabled:opacity-50"
-        >
+        <span className="text-xs font-medium text-muted">Topics</span>
+        <Button disabled={create.isPending} onClick={() => create.mutate({ committeeId: committee.id })}>
           + Add topic
-        </button>
+        </Button>
       </div>
       {create.error && (
-        <p className="mb-2 text-xs text-red-600">{msg(create.error)}</p>
+        <p className="mb-2 text-xs text-[#b23b3b]">{msg(create.error)}</p>
       )}
       {committee.topics.length === 0 ? (
-        <p className="text-xs text-neutral-400">No topics</p>
+        <p className="text-xs text-faint">No topics</p>
       ) : (
         <ul className="space-y-2">
           {committee.topics.map((t, i) => (
@@ -326,9 +323,9 @@ function TopicRow({
   };
 
   return (
-    <li className="rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
+    <li className="rounded-lg border border-line bg-wash/60 p-2">
       <div className="flex items-start gap-2">
-        <span className="pt-1.5 text-xs italic text-neutral-400">{numeral}</span>
+        <span className="pt-1.5 text-xs italic text-faint">{numeral}</span>
         <div className="min-w-0 flex-1 space-y-1">
           <InlineText
             ariaLabel="Topic title"
@@ -378,7 +375,7 @@ function TopicRow({
           </IconButton>
         </div>
       </div>
-      {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
+      {err && <p className="mt-1 text-xs text-[#b23b3b]">{err}</p>}
     </li>
   );
 }
@@ -406,7 +403,7 @@ function ReportCell({ topic }: { topic: Topic }) {
 
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className="text-neutral-400">Chair report</span>
+      <span className="text-faint">Chair report</span>
       <input
         ref={inputRef}
         type="file"
@@ -423,7 +420,7 @@ function ReportCell({ topic }: { topic: Topic }) {
             href={topic.report}
             target="_blank"
             rel="noreferrer"
-            className="rounded border border-neutral-300 px-2 py-0.5 font-medium text-neutral-700 hover:bg-white"
+            className="rounded border border-line px-2 py-0.5 font-medium text-body hover:bg-white"
           >
             View
           </a>
@@ -431,7 +428,7 @@ function ReportCell({ topic }: { topic: Topic }) {
             type="button"
             disabled={busy}
             onClick={() => inputRef.current?.click()}
-            className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+            className="text-muted hover:text-ink disabled:opacity-50"
           >
             {upload.isPending ? "Uploading…" : "Replace"}
           </button>
@@ -439,7 +436,7 @@ function ReportCell({ topic }: { topic: Topic }) {
             type="button"
             disabled={busy}
             onClick={() => update.mutate({ id: topic.id, patch: { report: null } })}
-            className="text-neutral-400 hover:text-red-600 disabled:opacity-50"
+            className="text-faint hover:text-[#b23b3b] disabled:opacity-50"
           >
             Delete
           </button>
@@ -449,13 +446,13 @@ function ReportCell({ topic }: { topic: Topic }) {
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="rounded border border-dashed border-neutral-300 px-2 py-0.5 text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
+          className="rounded border border-dashed border-line px-2 py-0.5 text-muted hover:border-faint hover:text-ink disabled:opacity-50"
         >
           {upload.isPending ? "Uploading…" : "Upload PDF (leave empty to show 'Released in September')"}
         </button>
       )}
       {(localErr || upload.error || update.error) && (
-        <span className="text-red-600">
+        <span className="text-[#b23b3b]">
           {localErr ?? msg(upload.error) ?? msg(update.error)}
         </span>
       )}
@@ -478,40 +475,8 @@ function Labeled({
 }) {
   return (
     <label className={cn("block", className)}>
-      <span className="text-[11px] text-neutral-400">{label}</span>
+      <span className="text-[11px] text-faint">{label}</span>
       <div className="mt-0.5">{children}</div>
     </label>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  onClick,
-  disabled,
-  danger,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "rounded p-1 text-xs text-neutral-400 disabled:opacity-30",
-        danger
-          ? "hover:bg-red-50 hover:text-red-600"
-          : "hover:bg-neutral-100 hover:text-neutral-800",
-      )}
-    >
-      {children}
-    </button>
   );
 }

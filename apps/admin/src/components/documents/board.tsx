@@ -4,13 +4,14 @@
 import { useRef, useState } from "react";
 import type { SiteData, SiteDocument } from "@daemun/shared";
 import { ApiError, MAX_UPLOAD_BYTES } from "@/lib/api";
-import { cn } from "@/lib/cn";
 import {
   documentHooks,
   useCreateDocumentFromFile,
   useReplaceDocumentFile,
 } from "@/lib/documents";
 import { InlineText } from "@/components/inline-edit";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 
 const ACCEPT = ".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp";
 const ACCEPT_RE = /\.(pdf|docx?|jpe?g|png|webp)$/i;
@@ -45,7 +46,7 @@ export function DocumentsBoard({ site }: { site: SiteData }) {
   return (
     <div className="space-y-4">
       {site.documents.length === 0 && (
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-faint">
           No documents yet. Upload a file to add it to the list.
         </p>
       )}
@@ -72,16 +73,11 @@ export function DocumentsBoard({ site }: { site: SiteData }) {
             e.target.value = "";
           }}
         />
-        <button
-          type="button"
-          disabled={create.isPending}
-          onClick={() => inputRef.current?.click()}
-          className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
-        >
+        <Button variant="ghost" disabled={create.isPending} onClick={() => inputRef.current?.click()}>
           {create.isPending ? "Uploading…" : "+ Add document (upload file)"}
-        </button>
+        </Button>
         {(localErr || create.error) && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-[#b23b3b]">
             {localErr ?? msg(create.error)}
           </p>
         )}
@@ -139,7 +135,7 @@ function DocumentRow({
   }
 
   return (
-    <li className="rounded-lg border border-neutral-200 bg-white p-3">
+    <li className="rounded-xl border border-line bg-white p-3">
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1 space-y-1.5">
           <InlineText
@@ -158,12 +154,12 @@ function DocumentRow({
             className="text-xs"
             onCommit={(v) => patch({ blurb: v })}
           />
-          <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
             <a
               href={doc.file}
               target="_blank"
               rel="noreferrer"
-              className="rounded border border-neutral-300 px-2 py-0.5 font-medium text-neutral-700 hover:bg-neutral-50"
+              className="rounded border border-line px-2 py-0.5 font-medium text-body hover:bg-wash"
             >
               View file
             </a>
@@ -181,11 +177,11 @@ function DocumentRow({
               type="button"
               disabled={busy}
               onClick={() => inputRef.current?.click()}
-              className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+              className="text-muted hover:text-ink disabled:opacity-50"
             >
               {replace.isPending ? "Uploading…" : "Replace"}
             </button>
-            <span className="text-neutral-300">·</span>
+            <span className="text-line">·</span>
             <span>{doc.kind || "Unknown format"}</span>
             {doc.size && <span>· {doc.size}</span>}
           </div>
@@ -215,39 +211,7 @@ function DocumentRow({
           </IconButton>
         </div>
       </div>
-      {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
+      {err && <p className="mt-1 text-xs text-[#b23b3b]">{err}</p>}
     </li>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  onClick,
-  disabled,
-  danger,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "rounded p-1 text-xs text-neutral-400 disabled:opacity-30",
-        danger
-          ? "hover:bg-red-50 hover:text-red-600"
-          : "hover:bg-neutral-100 hover:text-neutral-800",
-      )}
-    >
-      {children}
-    </button>
   );
 }

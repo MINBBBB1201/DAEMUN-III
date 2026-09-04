@@ -10,23 +10,23 @@ export const STATUS_META: Record<
 > = {
   awaiting: {
     label: "Waiting for review",
-    active: "bg-neutral-200 text-neutral-900",
-    idle: "text-neutral-500 hover:bg-neutral-100",
+    active: "bg-line text-ink",
+    idle: "text-muted hover:bg-wash",
   },
   review: {
     label: "Under review",
-    active: "bg-amber-500 text-white",
-    idle: "text-neutral-500 hover:bg-neutral-100",
+    active: "bg-gold text-white",
+    idle: "text-muted hover:bg-wash",
   },
   approved: {
     label: "Approved",
-    active: "bg-emerald-600 text-white",
-    idle: "text-neutral-500 hover:bg-neutral-100",
+    active: "bg-brand text-white",
+    idle: "text-muted hover:bg-wash",
   },
   published: {
     label: "Published",
-    active: "bg-sky-600 text-white",
-    idle: "text-neutral-500 hover:bg-neutral-100",
+    active: "bg-navy text-white",
+    idle: "text-muted hover:bg-wash",
   },
 };
 
@@ -45,7 +45,7 @@ export function StatusControl({
     <div
       role="group"
       aria-label="Status"
-      className="inline-flex overflow-hidden rounded-md border border-neutral-300 text-xs"
+      className="inline-flex overflow-hidden rounded-lg border border-line text-xs"
     >
       {ORDER.map((status, i) => {
         const meta = STATUS_META[status];
@@ -59,7 +59,7 @@ export function StatusControl({
             onClick={() => !active && onChange(status)}
             className={cn(
               "px-2.5 py-1 font-medium transition-colors disabled:opacity-50",
-              i > 0 && "border-l border-neutral-300",
+              i > 0 && "border-l border-line",
               active ? meta.active : meta.idle,
             )}
           >
@@ -70,4 +70,3 @@ export function StatusControl({
     </div>
   );
 }
-
