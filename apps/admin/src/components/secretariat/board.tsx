@@ -12,6 +12,7 @@ import {
   useUploadPersonPhoto,
 } from "@/lib/secretariat";
 import { InlineText, InlineTextarea } from "@/components/inline-edit";
+import { ChairsSection } from "@/components/secretariat/chairs";
 
 /** SiteData.secretariat를 편집 가능한 평면 구조로 되돌린다. */
 export function SecretariatBoard({ site }: { site: SiteData }) {
@@ -34,6 +35,8 @@ export function SecretariatBoard({ site }: { site: SiteData }) {
       <Section title="Departments" hint="Name, description, members">
         <Departments departments={departments} />
       </Section>
+
+      <ChairsSection site={site} />
     </div>
   );
 }
