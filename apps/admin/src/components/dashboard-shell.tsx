@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,11 +47,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   if (isPending) {
-    return <p className="p-6 text-sm text-neutral-500">Loading...</p>;
+    return <p className="p-6 text-sm text-muted">Loading…</p>;
   }
   if (error) {
     return (
-      <p className="p-6 text-sm text-red-600">
+      <p className="p-6 text-sm text-[#b23b3b]">
         Could not verify session: {error.message}
       </p>
     );
@@ -62,13 +63,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   if (session.user.role !== "admin") {
     return (
       <div className="p-6 text-sm">
-        <p className="font-medium text-red-600">This account does not have admin access.</p>
-        <p className="mt-1 text-neutral-600">
+        <p className="font-medium text-[#b23b3b]">
+          This account does not have admin access.
+        </p>
+        <p className="mt-1 text-body">
           {session.user.email} (role: {session.user.role ?? "none"})
         </p>
         <button
           onClick={logout}
-          className="mt-4 rounded-md border border-neutral-300 px-3 py-1.5 hover:bg-neutral-50"
+          className="mt-4 rounded-lg border border-line bg-white px-3 py-1.5 hover:bg-wash"
         >
           Sign in with a different account
         </button>
@@ -77,13 +80,27 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-neutral-200 bg-white">
-        <div className="border-b border-neutral-200 px-4 py-4">
-          <p className="text-sm font-semibold">DAEMUN III</p>
-          <p className="text-xs text-neutral-500">Admin Panel</p>
+    <div className="flex min-h-screen bg-wash">
+      <aside className="flex w-60 shrink-0 flex-col bg-navy text-white/80">
+        <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5">
+          <Image
+            src="/emblem-white.png"
+            alt="DAEMUN emblem"
+            width={30}
+            height={23}
+            priority
+          />
+          <div className="leading-tight">
+            <p className="font-custom text-[19px] tracking-[0.08em] text-white">
+              DAEMUN III
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+              Admin
+            </p>
+          </div>
         </div>
-        <nav className="flex-1 space-y-0.5 p-2">
+
+        <nav className="flex-1 space-y-0.5 p-3">
           {NAV.map((item) => {
             const active = item.exact
               ? pathname === item.href
@@ -93,10 +110,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "block rounded-md px-3 py-2 text-sm",
+                  "block border-l-2 py-2 pl-3 pr-2 text-[13px] transition-colors",
                   active
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-700 hover:bg-neutral-100",
+                    ? "border-gold bg-navy-soft text-white"
+                    : "border-transparent text-white/55 hover:bg-navy-soft/60 hover:text-white/90",
                 )}
               >
                 {item.label}
@@ -104,18 +121,23 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t border-neutral-200 p-3">
-          <p className="truncate px-1 pb-2 text-xs text-neutral-500" title={session.user.email}>
+
+        <div className="border-t border-white/10 p-4">
+          <p
+            className="truncate pb-2 text-[11px] text-white/40"
+            title={session.user.email}
+          >
             {session.user.email}
           </p>
           <button
             onClick={logout}
-            className="w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            className="w-full rounded-lg border border-white/15 px-3 py-1.5 text-[13px] text-white/75 transition-colors hover:border-white/30 hover:text-white"
           >
             Sign out
           </button>
         </div>
       </aside>
+
       <main className="min-w-0 flex-1">{children}</main>
     </div>
   );
