@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { cn } from "@/lib/cn";
 import { formatBytes, formatUptime, useStats } from "@/lib/stats";
+import { useCleanupUploads } from "@/lib/uploads";
 
 export default function DashboardPage() {
   const { data, isPending, error, dataUpdatedAt } = useStats();
@@ -83,9 +85,12 @@ export default function DashboardPage() {
               <Usage label="Swap" used={data.system.swap.usedBytes} total={data.system.swap.totalBytes} />
               <Usage label="Disk" used={data.system.disk.usedBytes} total={data.system.disk.totalBytes} />
             </div>
-            <p className="mt-2 text-xs text-faint">
-              Host uptime {formatUptime(data.system.uptimeSec)}.
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <p className="text-xs text-faint">
+                Host uptime {formatUptime(data.system.uptimeSec)}.
+              </p>
+              <CleanupUploadsButton />
+            </div>
           </section>
         </div>
       )}
@@ -177,5 +182,32 @@ function Usage({ label, used, total }: { label: string; used: number; total: num
         {total > 0 ? `${formatBytes(used)} of ${formatBytes(total)}` : "not available"}
       </p>
     </Card>
+  );
+}
+
+/**
+ * Replacing or removing an image/report/document/photo elsewhere in the
+ * panel never deletes the old file — this sweeps whatever no record
+ * references anymore. Skips anything uploaded in the last 10 minutes so an
+ * in-flight upload is never at risk.
+ */
+function CleanupUploadsButton() {
+  const cleanup = useCleanupUploads();
+  return (
+    <span className="flex items-center gap-2 text-xs">
+      <Button onClick={() => cleanup.mutate()} disabled={cleanup.isPending} className="text-xs">
+        {cleanup.isPending ? "Cleaning up…" : "Clean up unused uploads"}
+      </Button>
+      {cleanup.data && (
+        <span className="text-faint">
+          {cleanup.data.deleted.length === 0
+            ? "nothing to clean up"
+            : `removed ${cleanup.data.deleted.length} file${cleanup.data.deleted.length === 1 ? "" : "s"} · freed ${formatBytes(cleanup.data.freedBytes)}`}
+        </span>
+      )}
+      {cleanup.error && (
+        <span className="text-[#b23b3b]">{(cleanup.error as Error).message}</span>
+      )}
+    </span>
   );
 }
