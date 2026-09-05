@@ -21,7 +21,7 @@ export function Screen({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   onRefresh?: () => void;
   refreshing?: boolean;
   pending?: boolean;

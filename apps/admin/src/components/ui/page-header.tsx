@@ -18,7 +18,7 @@ export function PageHeader({
   className,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   onRefresh?: () => void;
   refreshing?: boolean;
   children?: React.ReactNode;
