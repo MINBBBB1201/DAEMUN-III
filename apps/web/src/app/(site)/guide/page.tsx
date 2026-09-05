@@ -1,26 +1,31 @@
 import { AnimeScrollbar } from "@/components/site/anime-scrollbar";
 import { DocsPage, type DocsSection } from "@/components/site/docs-page";
+import { DocumentsList } from "@/components/site/documents-list";
 import { PageHero } from "@/components/site/section";
+import { getSite } from "@/lib/site";
 
 import Committees from "@/content/guide/committees.mdx";
 import Rop from "@/content/guide/rop.mdx";
 import Clauses from "@/content/guide/clauses.mdx";
-import Documents from "@/content/guide/documents.mdx";
 
 export const metadata = { title: "Guide to MUN" };
 
 /**
- * Guide content lives in real MDX documents under src/content/guide/ —
- * edit those files to change this page.
+ * Guide content lives in real MDX documents under src/content/guide/ — edit
+ * those files to change this page. The Documents section is the one
+ * exception: it's driven by SiteData.documents (admin panel → Documents),
+ * not an MDX file, so the list always matches what's uploaded.
  */
-const sections: DocsSection[] = [
-  { id: "committees", title: "The committees", content: <Committees /> },
-  { id: "rop", title: "How a session runs", content: <Rop /> },
-  { id: "clauses", title: "Writing a resolution", content: <Clauses /> },
-  { id: "downloads", title: "Documents", content: <Documents /> },
-];
+export default async function GuidePage() {
+  const { documents } = await getSite();
 
-export default function GuidePage() {
+  const sections: DocsSection[] = [
+    { id: "committees", title: "The committees", content: <Committees /> },
+    { id: "rop", title: "How a session runs", content: <Rop /> },
+    { id: "clauses", title: "Writing a resolution", content: <Clauses /> },
+    { id: "downloads", title: "Documents", content: <DocumentsList documents={documents} /> },
+  ];
+
   return (
     <>
       <AnimeScrollbar />
