@@ -4,7 +4,10 @@
 import type { ResolutionStatus } from "@daemun/shared";
 import { ResolutionBoard } from "@/components/resolutions/board";
 import { STATUS_META } from "@/components/resolutions/controls";
+import { Screen } from "@/components/ui/screen";
 import { useSite } from "@/lib/crud-hooks";
+
+const ORDER: ResolutionStatus[] = ["awaiting", "review", "approved", "published"];
 
 export default function ResolutionsPage() {
   const { data, isPending, error, isFetching, refetch } = useSite();
@@ -22,31 +25,20 @@ export default function ResolutionsPage() {
     : null;
 
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold">Resolutions</h1>
-          <p className="mt-0.5 text-xs text-neutral-500">
-            Topics and resolution status by committee. Saving reflects
-            immediately on the public site.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50 disabled:opacity-50"
-        >
-          {isFetching ? "Refreshing…" : "Refresh"}
-        </button>
-      </div>
-
+    <Screen
+      title="Resolutions"
+      subtitle="Topics and resolution status by committee. Saving reflects immediately on the public site."
+      onRefresh={() => refetch()}
+      refreshing={isFetching}
+      pending={isPending}
+      error={error}
+    >
       {counts && (
-        <div className="mt-4 flex gap-2 text-xs">
-          {(["awaiting", "review", "approved", "published"] as ResolutionStatus[]).map((s) => (
+        <div className="mb-5 flex flex-wrap gap-2 text-xs">
+          {ORDER.map((s) => (
             <span
               key={s}
-              className="rounded-full border border-neutral-200 bg-white px-2.5 py-1 font-medium text-neutral-600"
+              className="rounded-full border border-line bg-white px-2.5 py-1 font-medium text-body"
             >
               {STATUS_META[s].label} {counts[s]}
             </span>
@@ -54,17 +46,7 @@ export default function ResolutionsPage() {
         </div>
       )}
 
-      <div className="mt-6">
-        {isPending && (
-          <p className="text-sm text-neutral-500">Loading...</p>
-        )}
-        {error && (
-          <p className="text-sm text-red-600">
-            Failed to load: {error.message}
-          </p>
-        )}
-        {data && <ResolutionBoard site={data} />}
-      </div>
-    </div>
+      {data && <ResolutionBoard site={data} />}
+    </Screen>
   );
 }
