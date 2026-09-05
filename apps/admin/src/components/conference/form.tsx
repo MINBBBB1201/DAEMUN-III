@@ -5,6 +5,7 @@ import type { Conference } from "@daemun/shared";
 import { ApiError } from "@/lib/api";
 import { useUpdateConference } from "@/lib/conference";
 import { InlineText, InlineTextarea } from "@/components/inline-edit";
+import { Card } from "@/components/ui/card";
 
 type Field = keyof Conference;
 
@@ -59,19 +60,19 @@ export function ConferenceForm({ conference }: { conference: Conference }) {
     <div className="max-w-2xl space-y-8">
       {GROUPS.map((group) => (
         <section key={group.title}>
-          <div className="mb-2 flex items-baseline gap-2">
-            <h2 className="text-sm font-semibold">{group.title}</h2>
+          <div className="mb-2.5 flex items-baseline gap-2">
+            <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">{group.title}</h2>
             {group.hint && (
-              <span className="text-xs text-neutral-400">{group.hint}</span>
+              <span className="text-xs text-faint">{group.hint}</span>
             )}
           </div>
-          <div className="space-y-3 rounded-lg border border-neutral-200 bg-white p-4">
+          <Card className="space-y-3 p-4">
             {group.fields.map(({ key, label, help, multiline }) => (
               <label key={key} className="block">
-                <span className="text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium text-body">
                   {label}
                   {help && (
-                    <span className="ml-1.5 font-normal text-neutral-400">
+                    <span className="ml-1.5 font-normal text-faint">
                       {help}
                     </span>
                   )}
@@ -91,19 +92,19 @@ export function ConferenceForm({ conference }: { conference: Conference }) {
                       value={conference[key] ?? ""}
                       placeholder={help}
                       pending={update.isPending}
-                      className="border-neutral-300"
+                      className="border-line"
                       onCommit={(v) => update.mutateAsync({ [key]: v })}
                     />
                   )}
                 </div>
               </label>
             ))}
-          </div>
+          </Card>
         </section>
       ))}
 
       {update.error && (
-        <p className="text-sm text-red-600">
+        <p className="text-sm text-[#b23b3b]">
           Save failed:{" "}
           {update.error instanceof ApiError
             ? update.error.message

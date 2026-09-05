@@ -8,9 +8,11 @@
 import { useRef, useState } from "react";
 import type { CommitteeWithTopics, Person, SiteData } from "@daemun/shared";
 import { ApiError, MAX_UPLOAD_BYTES } from "@/lib/api";
-import { cn } from "@/lib/cn";
 import { peopleHooks, useUploadPersonPhoto } from "@/lib/secretariat";
 import { InlineText } from "@/components/inline-edit";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
 
 function msg(err: unknown): string | null {
   if (!err) return null;
@@ -20,15 +22,15 @@ function msg(err: unknown): string | null {
 export function ChairsSection({ site }: { site: SiteData }) {
   return (
     <section>
-      <div className="mb-2 flex items-baseline gap-2">
-        <h2 className="text-sm font-semibold">Chairs</h2>
-        <span className="text-xs text-neutral-400">
+      <div className="mb-2.5 flex items-baseline gap-2">
+        <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">Chairs</h2>
+        <span className="text-xs text-faint">
           Dais by committee — the first entry is the head chair
         </span>
       </div>
 
       {site.committees.length === 0 ? (
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-faint">
           Add a committee under &ldquo;Committees &amp; Topics&rdquo; first.
         </p>
       ) : (
@@ -56,25 +58,25 @@ function CommitteeChairs({
   const create = peopleHooks.useCreate();
 
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <header className="flex items-baseline gap-2 border-b border-neutral-100 bg-neutral-50 px-3 py-2">
-        <span className="text-xs font-semibold text-neutral-700">
+    <Card className="overflow-hidden">
+      <header className="flex items-baseline gap-2 border-b border-line bg-wash/60 px-3 py-2">
+        <span className="text-xs font-semibold text-body">
           {committee.code}
         </span>
-        <span className="truncate text-xs text-neutral-400">{committee.name}</span>
+        <span className="truncate text-xs text-faint">{committee.name}</span>
       </header>
 
       <div className="space-y-2 p-3">
         {chairs.length === 0 ? (
-          <p className="text-xs text-neutral-400">No chairs yet</p>
+          <p className="text-xs text-faint">No chairs yet</p>
         ) : (
           chairs.map((p, i) => (
             <ChairRow key={p.id} person={p} siblings={chairs} index={i} />
           ))
         )}
 
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           disabled={create.isPending}
           onClick={() =>
             create.mutate({
@@ -84,15 +86,14 @@ function CommitteeChairs({
               committeeId: committee.id,
             })
           }
-          className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
         >
           + Add chair
-        </button>
+        </Button>
         {create.error && (
-          <p className="text-xs text-red-600">{msg(create.error)}</p>
+          <p className="text-xs text-[#b23b3b]">{msg(create.error)}</p>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -123,7 +124,7 @@ function ChairRow({
     update.mutateAsync({ id: person.id, patch: p });
 
   return (
-    <div className="flex gap-3 rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
+    <div className="flex gap-3 rounded-lg border border-line bg-wash/60 p-2">
       <ChairPhoto person={person} />
 
       <div className="min-w-0 flex-1 space-y-1">
@@ -140,10 +141,10 @@ function ChairRow({
           value={person.role}
           placeholder="e.g. Head Chair, Deputy Chair"
           pending={update.isPending}
-          className="text-xs text-neutral-500"
+          className="text-xs text-muted"
           onCommit={(role) => patch({ role })}
         />
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && <p className="text-xs text-[#b23b3b]">{err}</p>}
       </div>
 
       <div className="flex shrink-0 items-center gap-0.5">
@@ -196,12 +197,12 @@ function ChairPhoto({ person }: { person: Person }) {
 
   return (
     <div className="w-14 shrink-0">
-      <div className="relative aspect-square overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+      <div className="relative aspect-square overflow-hidden rounded border border-line bg-wash">
         {person.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={person.photo} alt="" className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full items-center justify-center text-[9px] text-neutral-400">
+          <div className="flex h-full items-center justify-center text-[9px] text-faint">
             No photo
           </div>
         )}
@@ -221,7 +222,7 @@ function ChairPhoto({ person }: { person: Person }) {
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+          className="text-muted hover:text-ink disabled:opacity-50"
         >
           {upload.isPending ? "…" : person.photo ? "Replace" : "Upload"}
         </button>
@@ -230,49 +231,17 @@ function ChairPhoto({ person }: { person: Person }) {
             type="button"
             disabled={busy}
             onClick={() => update.mutate({ id: person.id, patch: { photo: null } })}
-            className="text-neutral-400 hover:text-red-600 disabled:opacity-50"
+            className="text-faint hover:text-[#b23b3b] disabled:opacity-50"
           >
             Remove
           </button>
         )}
       </div>
       {(localErr || upload.error || update.error) && (
-        <p className="text-[10px] text-red-600">
+        <p className="text-[10px] text-[#b23b3b]">
           {localErr ?? msg(upload.error) ?? msg(update.error)}
         </p>
       )}
     </div>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  onClick,
-  disabled,
-  danger,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "rounded p-1 text-xs text-neutral-400 disabled:opacity-30",
-        danger
-          ? "hover:bg-red-50 hover:text-red-600"
-          : "hover:bg-neutral-100 hover:text-neutral-800",
-      )}
-    >
-      {children}
-    </button>
   );
 }

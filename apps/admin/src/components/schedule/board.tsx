@@ -6,6 +6,9 @@ import { ApiError } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { dayHooks, itemHooks } from "@/lib/schedule";
 import { InlineText } from "@/components/inline-edit";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
 
 function msg(err: unknown): string | null {
   if (!err) return null;
@@ -18,7 +21,7 @@ export function ScheduleBoard({ site }: { site: SiteData }) {
   return (
     <div className="space-y-5">
       {site.schedule.length === 0 && (
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-faint">
           No dates yet. Adding a date makes the schedule section appear on
           the homepage.
         </p>
@@ -29,18 +32,15 @@ export function ScheduleBoard({ site }: { site: SiteData }) {
       ))}
 
       <div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           disabled={create.isPending}
-          onClick={() =>
-            create.mutate({ day: `Day ${site.schedule.length + 1}` })
-          }
-          className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
+          onClick={() => create.mutate({ day: `Day ${site.schedule.length + 1}` })}
         >
           + Add date
-        </button>
+        </Button>
         {create.error && (
-          <p className="mt-1 text-xs text-red-600">{msg(create.error)}</p>
+          <p className="mt-1 text-xs text-[#b23b3b]">{msg(create.error)}</p>
         )}
       </div>
     </div>
@@ -74,8 +74,8 @@ function DayCard({
     update.mutateAsync({ id: day.id, patch: p });
 
   return (
-    <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <header className="flex items-start gap-3 border-b border-neutral-200 bg-neutral-50 p-4">
+    <Card className="overflow-hidden">
+      <header className="flex items-start gap-3 border-b border-line bg-wash/60 p-4">
         <div className="min-w-0 flex-1 space-y-1.5">
           <Labeled label="Day label">
             <InlineText
@@ -128,10 +128,10 @@ function DayCard({
         </div>
       </header>
 
-      {err && <p className="px-4 pt-2 text-xs text-red-600">{err}</p>}
+      {err && <p className="px-4 pt-2 text-xs text-[#b23b3b]">{err}</p>}
 
       <Items day={day} />
-    </section>
+    </Card>
   );
 }
 
@@ -141,21 +141,16 @@ function Items({ day }: { day: ScheduleDayWithItems }) {
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-medium text-neutral-500">Schedule items</span>
-        <button
-          type="button"
-          disabled={create.isPending}
-          onClick={() => create.mutate({ dayId: day.id, event: "New item" })}
-          className="rounded-md border border-neutral-300 px-2.5 py-1 text-xs hover:bg-neutral-50 disabled:opacity-50"
-        >
+        <span className="text-xs font-medium text-muted">Schedule items</span>
+        <Button disabled={create.isPending} onClick={() => create.mutate({ dayId: day.id, event: "New item" })}>
           + Add item
-        </button>
+        </Button>
       </div>
       {create.error && (
-        <p className="mb-2 text-xs text-red-600">{msg(create.error)}</p>
+        <p className="mb-2 text-xs text-[#b23b3b]">{msg(create.error)}</p>
       )}
       {day.items.length === 0 ? (
-        <p className="text-xs text-neutral-400">No items</p>
+        <p className="text-xs text-faint">No items</p>
       ) : (
         <ul className="space-y-2">
           {day.items.map((it, i) => (
@@ -194,7 +189,7 @@ function ItemRow({
     update.mutateAsync({ id: item.id, patch: p });
 
   return (
-    <li className="rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
+    <li className="rounded-lg border border-line bg-wash/60 p-2">
       <div className="flex items-start gap-2">
         <div className="w-28 shrink-0">
           <InlineText
@@ -240,7 +235,7 @@ function ItemRow({
           </IconButton>
         </div>
       </div>
-      {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
+      {err && <p className="mt-1 text-xs text-[#b23b3b]">{err}</p>}
     </li>
   );
 }
@@ -260,40 +255,8 @@ function Labeled({
 }) {
   return (
     <label className={cn("block", className)}>
-      <span className="text-[11px] text-neutral-400">{label}</span>
+      <span className="text-[11px] text-faint">{label}</span>
       <div className="mt-0.5">{children}</div>
     </label>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  onClick,
-  disabled,
-  danger,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "rounded p-1 text-xs text-neutral-400 disabled:opacity-30",
-        danger
-          ? "hover:bg-red-50 hover:text-red-600"
-          : "hover:bg-neutral-100 hover:text-neutral-800",
-      )}
-    >
-      {children}
-    </button>
   );
 }

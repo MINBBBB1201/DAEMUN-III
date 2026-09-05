@@ -28,6 +28,9 @@ ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3001 HOSTNAME=0.0.0.0
 WORKDIR /repo
 COPY --from=build /repo/apps/admin/.next/standalone ./
 COPY --from=build /repo/apps/admin/.next/static ./apps/admin/.next/static
+# `output: standalone` does not bundle public/ — without this the body font and
+# the emblems 404 in the container (apps/web/Dockerfile does the same).
+COPY --from=build /repo/apps/admin/public ./apps/admin/public
 USER node
 EXPOSE 3001
 CMD ["node", "apps/admin/server.js"]
