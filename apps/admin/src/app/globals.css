@@ -2,8 +2,54 @@
 
 :root {
   color-scheme: light;
+  --background: var(--color-wash);
+  --foreground: #12171f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* DAEMUN brand — mirrors apps/web/src/app/globals.css (blue sampled from the logo) */
+  --color-navy: #0a1428;
+  --color-navy-soft: #101c36;
+  --color-brand: #0c4884;
+  --color-gold: #a8823f;
+  --color-gold-soft: #c9a968;
+  --color-ink: #12171f;
+  --color-body: #4a525f;
+  --color-muted: #5e6673;
+  --color-faint: #8a8f99;
+  --color-line: #e5e4e0;
+  --color-wash: #f7f6f4;
+
+  --font-sans: roman, "Times New Roman", serif;
+  --font-serif: roman, "Times New Roman", serif;
+}
+
+/* skiper-UI pack body face (P22 Parrish Roman) — copied from apps/web/public/fonts */
+@font-face {
+  font-family: roman;
+  src: url("/fonts/skiper-roman.woff") format("woff");
+  font-display: swap;
+}
+
+/* Heading face: Cormorant SC, loaded via next/font in app/layout.tsx */
+.font-custom {
+  font-family: var(--font-cormorant-sc), "Cormorant SC", Georgia, serif;
+  font-weight: 600;
+}
+.font-roman {
+  font-family: roman, "Times New Roman", serif;
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: roman, "Times New Roman", serif;
+}
+
+::selection {
+  background: #0c4884;
+  color: #ffffff;
 }

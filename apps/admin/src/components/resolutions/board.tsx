@@ -12,6 +12,8 @@ import { ApiError, MAX_UPLOAD_BYTES } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { resolutionHooks, useUploadResolutionDoc } from "@/lib/resolutions";
 import { InlineText } from "@/components/inline-edit";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { STATUS_META, StatusControl } from "./controls";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
@@ -19,7 +21,7 @@ const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 export function ResolutionBoard({ site }: { site: SiteData }) {
   if (site.committees.length === 0) {
     return (
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted">
         No committees yet. Add committees and topics first.
       </p>
     );
@@ -54,13 +56,13 @@ function CommitteeSection({
   const orphanTopicIds = [...byTopic.keys()].filter((id) => !knownTopicIds.has(id));
 
   return (
-    <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-      <header className="flex items-baseline gap-2 border-b border-neutral-200 bg-neutral-50 px-5 py-3">
-        <h2 className="text-sm font-semibold">{committee.name}</h2>
-        <span className="text-xs text-neutral-500">{committee.code}</span>
+    <Card className="overflow-hidden">
+      <header className="flex items-baseline gap-2 border-b border-line bg-wash/60 px-5 py-3">
+        <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">{committee.name}</h2>
+        <span className="text-xs text-muted">{committee.code}</span>
       </header>
 
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-line/70">
         {committee.topics.map((topic, i) => (
           <TopicGroup
             key={topic.id}
@@ -87,7 +89,7 @@ function CommitteeSection({
           />
         ))}
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -121,14 +123,14 @@ function TopicGroup({
     <div className="px-5 py-4">
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-baseline gap-2">
-          <span className="text-xs italic text-neutral-400">{numeral}</span>
-          <span className="truncate text-sm font-medium text-neutral-800">
+          <span className="text-xs italic text-faint">{numeral}</span>
+          <span className="truncate text-sm font-medium text-ink">
             {title || "Untitled topic"}
           </span>
         </div>
         {allowAdd && (
-          <button
-            type="button"
+          <Button
+            className="shrink-0"
             disabled={create.isPending}
             onClick={() =>
               create.mutate({
@@ -138,21 +140,20 @@ function TopicGroup({
                 status: "awaiting",
               })
             }
-            className="shrink-0 rounded-md border border-neutral-300 px-2.5 py-1 text-xs hover:bg-neutral-50 disabled:opacity-50"
           >
             + Add resolution
-          </button>
+          </Button>
         )}
       </div>
 
       {create.error && (
-        <p className="mt-2 text-xs text-red-600">
+        <p className="mt-2 text-xs text-[#b23b3b]">
           Failed to add: {(create.error as Error).message}
         </p>
       )}
 
       {resolutions.length === 0 ? (
-        <p className="mt-2 pl-5 text-xs text-neutral-400">No resolutions submitted</p>
+        <p className="mt-2 pl-5 text-xs text-faint">No resolutions submitted</p>
       ) : (
         <ul className="mt-2 space-y-2">
           {resolutions.map((r) => (
@@ -173,7 +174,7 @@ function ResolutionRow({ resolution }: { resolution: Resolution }) {
     (update.error as Error | null) ?? (remove.error as Error | null);
 
   return (
-    <li className="rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
+    <li className="rounded-lg border border-line bg-wash/60 p-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="min-w-[9rem] flex-[2]">
           <InlineText
@@ -212,7 +213,7 @@ function ResolutionRow({ resolution }: { resolution: Resolution }) {
           onClick={() => {
             if (window.confirm("Delete this resolution?")) remove.mutate(resolution.id);
           }}
-          className="ml-auto rounded p-1 text-neutral-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+          className="ml-auto rounded p-1 text-faint hover:bg-[#fdf1f1] hover:text-[#b23b3b] disabled:opacity-50"
           aria-label="Delete resolution"
           title="Delete"
         >
@@ -220,13 +221,13 @@ function ResolutionRow({ resolution }: { resolution: Resolution }) {
         </button>
       </div>
 
-      <div className="mt-1 flex items-center gap-2 pl-1.5 text-[11px] text-neutral-400">
+      <div className="mt-1 flex items-center gap-2 pl-1.5 text-[11px] text-faint">
         <span>{STATUS_META[resolution.status].label}</span>
         <span>·</span>
         <span>Updated {new Date(resolution.updatedAt).toLocaleString("en-GB")}</span>
-        {busy && <span className="text-neutral-500">Saving…</span>}
+        {busy && <span className="text-muted">Saving…</span>}
         {err && (
-          <span className="text-red-600">
+          <span className="text-[#b23b3b]">
             {err instanceof ApiError ? err.message : "Save failed"}
           </span>
         )}
@@ -285,7 +286,7 @@ function DocCell({ resolution }: { resolution: Resolution }) {
             href={resolution.document}
             target="_blank"
             rel="noreferrer"
-            className="rounded border border-neutral-300 px-2 py-1 font-medium text-neutral-700 hover:bg-white"
+            className="rounded border border-line px-2 py-1 font-medium text-body hover:bg-white"
           >
             View document
           </a>
@@ -293,7 +294,7 @@ function DocCell({ resolution }: { resolution: Resolution }) {
             type="button"
             disabled={busy}
             onClick={() => inputRef.current?.click()}
-            className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+            className="text-muted hover:text-ink disabled:opacity-50"
           >
             {upload.isPending ? "Uploading…" : "Replace"}
           </button>
@@ -304,7 +305,7 @@ function DocCell({ resolution }: { resolution: Resolution }) {
               if (window.confirm("Delete this resolution's document link? You will need to upload the file again."))
                 update.mutate({ id: resolution.id, patch: { document: null } });
             }}
-            className="text-neutral-400 hover:text-red-600 disabled:opacity-50"
+            className="text-faint hover:text-[#b23b3b] disabled:opacity-50"
           >
             Delete
           </button>
@@ -315,14 +316,14 @@ function DocCell({ resolution }: { resolution: Resolution }) {
           disabled={busy}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            "rounded border border-dashed border-neutral-300 px-2 py-1 text-neutral-500",
-            "hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50",
+            "rounded border border-dashed border-line px-2 py-1 text-muted",
+            "hover:border-faint hover:text-ink disabled:opacity-50",
           )}
         >
           {upload.isPending ? "Uploading…" : "Upload PDF"}
         </button>
       )}
-      {err && <span className="text-red-600">{err}</span>}
+      {err && <span className="text-[#b23b3b]">{err}</span>}
     </div>
   );
 }

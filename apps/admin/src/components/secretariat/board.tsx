@@ -4,7 +4,6 @@
 import { useRef, useState } from "react";
 import type { Department, Person, SiteData } from "@daemun/shared";
 import { ApiError, MAX_UPLOAD_BYTES } from "@/lib/api";
-import { cn } from "@/lib/cn";
 import {
   departmentHooks,
   peopleHooks,
@@ -13,6 +12,9 @@ import {
 } from "@/lib/secretariat";
 import { InlineText, InlineTextarea } from "@/components/inline-edit";
 import { ChairsSection } from "@/components/secretariat/chairs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { IconButton } from "@/components/ui/icon-button";
 
 /** SiteData.secretariat를 편집 가능한 평면 구조로 되돌린다. */
 export function SecretariatBoard({ site }: { site: SiteData }) {
@@ -52,9 +54,9 @@ function Section({
 }) {
   return (
     <section>
-      <div className="mb-2 flex items-baseline gap-2">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        {hint && <span className="text-xs text-neutral-400">{hint}</span>}
+      <div className="mb-2.5 flex items-baseline gap-2">
+        <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">{title}</h2>
+        {hint && <span className="text-xs text-faint">{hint}</span>}
       </div>
       {children}
     </section>
@@ -100,8 +102,8 @@ function AddPerson({
   const create = peopleHooks.useCreate();
   return (
     <div>
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         disabled={create.isPending}
         onClick={() =>
           create.mutate({
@@ -111,12 +113,11 @@ function AddPerson({
             departmentId: departmentId ?? null,
           })
         }
-        className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
       >
         + {label}
-      </button>
+      </Button>
       {create.error && (
-        <p className="mt-1 text-xs text-red-600">
+        <p className="mt-1 text-xs text-[#b23b3b]">
           {(create.error as Error).message}
         </p>
       )}
@@ -152,7 +153,7 @@ function PersonCard({
     (reorder.error as Error | null);
 
   return (
-    <div className="flex gap-3 rounded-lg border border-neutral-200 bg-white p-3">
+    <Card className="flex gap-3 p-3">
       <PhotoCell person={person} />
 
       <div className="min-w-0 flex-1 space-y-1.5">
@@ -172,7 +173,7 @@ function PersonCard({
               placeholder="e.g. Deputy Secretary-General"
               pending={update.isPending}
               onCommit={(role) => update.mutateAsync({ id: person.id, patch: { role } })}
-              className="text-xs text-neutral-500"
+              className="text-xs text-muted"
             />
           </div>
 
@@ -198,7 +199,7 @@ function PersonCard({
         </div>
 
         <div>
-          <label className="text-[11px] text-neutral-400">Greeting (blank line separates paragraphs)</label>
+          <label className="text-[11px] text-faint">Greeting (blank line separates paragraphs)</label>
           <InlineTextarea
             ariaLabel="Greeting"
             value={person.greeting ?? ""}
@@ -212,7 +213,7 @@ function PersonCard({
 
         <StatusLine busy={busy} err={err} />
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -246,7 +247,7 @@ function PhotoCell({ person }: { person: Person }) {
 
   return (
     <div className="w-24 shrink-0">
-      <div className="relative aspect-[4/5] overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-line bg-wash">
         {person.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -255,7 +256,7 @@ function PhotoCell({ person }: { person: Person }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-[10px] text-neutral-400">
+          <div className="flex h-full items-center justify-center text-[10px] text-faint">
             No photo
           </div>
         )}
@@ -276,7 +277,7 @@ function PhotoCell({ person }: { person: Person }) {
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="text-neutral-500 hover:text-neutral-900 disabled:opacity-50"
+          className="text-muted hover:text-ink disabled:opacity-50"
         >
           {upload.isPending ? "Uploading…" : person.photo ? "Replace" : "Upload"}
         </button>
@@ -288,13 +289,13 @@ function PhotoCell({ person }: { person: Person }) {
               if (window.confirm(`Delete ${person.name}'s photo?`))
                 update.mutate({ id: person.id, patch: { photo: null } });
             }}
-            className="text-neutral-400 hover:text-red-600 disabled:opacity-50"
+            className="text-faint hover:text-[#b23b3b] disabled:opacity-50"
           >
             Delete
           </button>
         )}
       </div>
-      {err && <p className="text-[11px] text-red-600">{err}</p>}
+      {err && <p className="text-[11px] text-[#b23b3b]">{err}</p>}
     </div>
   );
 }
@@ -314,16 +315,11 @@ function Departments({
       {departments.map((d) => (
         <DepartmentCard key={d.id} department={d} siblings={departments} />
       ))}
-      <button
-        type="button"
-        disabled={create.isPending}
-        onClick={() => create.mutate({ name: "New Department", blurb: "" })}
-        className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800 disabled:opacity-50"
-      >
+      <Button variant="ghost" disabled={create.isPending} onClick={() => create.mutate({ name: "New Department", blurb: "" })}>
         + Add department
-      </button>
+      </Button>
       {create.error && (
-        <p className="text-xs text-red-600">{(create.error as Error).message}</p>
+        <p className="text-xs text-[#b23b3b]">{(create.error as Error).message}</p>
       )}
     </div>
   );
@@ -354,7 +350,7 @@ function DepartmentCard({
     (reorder.error as Error | null);
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-neutral-50/60 p-3">
+    <div className="rounded-xl border border-line bg-wash/60 p-3">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <InlineText
@@ -391,11 +387,11 @@ function DepartmentCard({
             disabled={busy}
             onClick={() => {
               const n = department.members.length;
-              const msg =
+              const message =
                 n > 0
                   ? `Delete the "${department.name}" department along with its ${n} member(s)? This cannot be undone.`
                   : `Delete the "${department.name}" department?`;
-              if (window.confirm(msg))
+              if (window.confirm(message))
                 remove.mutate({
                   id: department.id,
                   memberIds: department.members.map((m) => m.id),
@@ -411,7 +407,7 @@ function DepartmentCard({
         <StatusLine busy={busy} err={err} />
       </div>
 
-      <div className="mt-3 border-t border-neutral-200 pt-3">
+      <div className="mt-3 border-t border-line pt-3">
         <PeopleList
           people={department.members}
           section="department"
@@ -426,43 +422,13 @@ function DepartmentCard({
 /*  Shared bits                                                        */
 /* ------------------------------------------------------------------ */
 
-function IconButton({
-  children,
-  label,
-  onClick,
-  disabled,
-  danger,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        "rounded p-1 text-xs text-neutral-400 disabled:opacity-30",
-        danger ? "hover:bg-red-50 hover:text-red-600" : "hover:bg-neutral-100 hover:text-neutral-800",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
 function StatusLine({ busy, err }: { busy: boolean; err: Error | null }) {
   if (!busy && !err) return null;
   return (
     <p className="text-[11px]">
-      {busy && <span className="text-neutral-400">Saving…</span>}
+      {busy && <span className="text-faint">Saving…</span>}
       {err && (
-        <span className="text-red-600">
+        <span className="text-[#b23b3b]">
           {err instanceof ApiError ? err.message : "Save failed"}
         </span>
       )}

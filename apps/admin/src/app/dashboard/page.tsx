@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { cn } from "@/lib/cn";
 import { formatBytes, formatUptime, useStats } from "@/lib/stats";
 
@@ -8,20 +10,21 @@ export default function DashboardPage() {
   const { data, isPending, error, dataUpdatedAt } = useStats();
 
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-lg font-semibold">Overview</h1>
+    <div className="p-6 lg:p-8">
+      <PageHeader title="Overview">
         {data && (
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-faint">
             Auto-refreshes every 10 s · updated{" "}
             {new Date(dataUpdatedAt).toLocaleTimeString("en-GB")}
           </p>
         )}
-      </div>
+      </PageHeader>
 
-      {isPending && <p className="mt-4 text-sm text-neutral-500">Loading…</p>}
+      {isPending && <p className="mt-6 text-sm text-muted">Loading…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600">Could not load stats: {error.message}</p>
+        <p className="mt-6 text-sm text-[#b23b3b]">
+          Could not load stats: {error.message}
+        </p>
       )}
 
       {data && (
@@ -47,18 +50,21 @@ export default function DashboardPage() {
           {/* Resolutions */}
           <section>
             <SectionTitle>
-              Resolutions{" "}
-              <Link href="/dashboard/resolutions" className="ml-2 text-xs font-normal text-neutral-500 underline">
+              Resolutions
+              <Link
+                href="/dashboard/resolutions"
+                className="ml-2 text-xs font-normal text-brand underline-offset-2 hover:underline"
+              >
                 open board
               </Link>
             </SectionTitle>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Stat label="Waiting for review" value={data.resolutions.awaiting} tone="neutral" />
-              <Stat label="Under review" value={data.resolutions.review} tone="amber" />
-              <Stat label="Approved" value={data.resolutions.approved} tone="emerald" />
-              <Stat label="Published" value={data.resolutions.published} tone="sky" />
+              <Stat label="Waiting for review" value={data.resolutions.awaiting} tone="faint" />
+              <Stat label="Under review" value={data.resolutions.review} tone="gold" />
+              <Stat label="Approved" value={data.resolutions.approved} tone="brand" />
+              <Stat label="Published" value={data.resolutions.published} tone="navy" />
             </div>
-            <p className="mt-2 text-xs text-neutral-400">
+            <p className="mt-2 text-xs text-faint">
               {data.resolutions.total} resolution{data.resolutions.total === 1 ? "" : "s"} in total.
               Approved resolutions stay hidden from delegates until they are published.
             </p>
@@ -77,7 +83,7 @@ export default function DashboardPage() {
               <Usage label="Swap" used={data.system.swap.usedBytes} total={data.system.swap.totalBytes} />
               <Usage label="Disk" used={data.system.disk.usedBytes} total={data.system.disk.totalBytes} />
             </div>
-            <p className="mt-2 text-xs text-neutral-400">
+            <p className="mt-2 text-xs text-faint">
               Host uptime {formatUptime(data.system.uptimeSec)}.
             </p>
           </section>
@@ -90,21 +96,25 @@ export default function DashboardPage() {
 /* ------------------------------------------------------------------ */
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-2 flex items-baseline text-sm font-semibold">{children}</h2>;
+  return (
+    <h2 className="font-custom mb-2.5 flex items-baseline text-[17px] tracking-[0.02em] text-ink">
+      {children}
+    </h2>
+  );
 }
 
 const TONES = {
-  neutral: "text-neutral-900",
-  amber: "text-amber-600",
-  emerald: "text-emerald-700",
-  sky: "text-sky-700",
+  faint: "text-faint",
+  gold: "text-gold",
+  brand: "text-brand",
+  navy: "text-navy",
 } as const;
 
 function Stat({
   label,
   value,
   hint,
-  tone = "neutral",
+  tone = "navy",
   accent,
 }: {
   label: string;
@@ -114,29 +124,26 @@ function Stat({
   accent?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-lg border bg-white p-4",
-        accent ? "border-neutral-900" : "border-neutral-200",
-      )}
-    >
-      <p className="text-xs text-neutral-500">{label}</p>
-      <p className={cn("mt-1 text-3xl font-semibold tabular-nums", TONES[tone])}>{value}</p>
-      {hint && <p className="mt-1 text-[11px] text-neutral-400">{hint}</p>}
-    </div>
+    <Card className={cn("p-4", accent && "border-gold")}>
+      <p className="text-xs text-muted">{label}</p>
+      <p className={cn("font-custom mt-1 text-[34px] leading-none tabular-nums", TONES[tone])}>
+        {value}
+      </p>
+      {hint && <p className="mt-1.5 text-[11px] text-faint">{hint}</p>}
+    </Card>
   );
 }
 
 function barColor(pct: number) {
-  if (pct >= 90) return "bg-red-500";
-  if (pct >= 75) return "bg-amber-500";
-  return "bg-neutral-900";
+  if (pct >= 90) return "bg-[#b23b3b]";
+  if (pct >= 75) return "bg-gold";
+  return "bg-navy";
 }
 
 function Bar({ pct }: { pct: number }) {
   const clamped = Math.max(0, Math.min(100, pct));
   return (
-    <div className="mt-2 h-1.5 w-full overflow-hidden rounded bg-neutral-100">
+    <div className="mt-2 h-1.5 w-full overflow-hidden rounded bg-line">
       <div className={cn("h-full rounded", barColor(clamped))} style={{ width: `${clamped}%` }} />
     </div>
   );
@@ -144,29 +151,31 @@ function Bar({ pct }: { pct: number }) {
 
 function Gauge({ label, pct, detail }: { label: string; pct: number; detail: string }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+    <Card className="p-4">
       <div className="flex items-baseline justify-between">
-        <p className="text-xs text-neutral-500">{label}</p>
-        <p className="text-sm font-semibold tabular-nums">{pct.toFixed(0)}%</p>
+        <p className="text-xs text-muted">{label}</p>
+        <p className="text-sm font-medium tabular-nums text-ink">{pct.toFixed(0)}%</p>
       </div>
       <Bar pct={pct} />
-      <p className="mt-1 text-[11px] text-neutral-400">{detail}</p>
-    </div>
+      <p className="mt-1 text-[11px] text-faint">{detail}</p>
+    </Card>
   );
 }
 
 function Usage({ label, used, total }: { label: string; used: number; total: number }) {
   const pct = total > 0 ? (used / total) * 100 : 0;
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+    <Card className="p-4">
       <div className="flex items-baseline justify-between">
-        <p className="text-xs text-neutral-500">{label}</p>
-        <p className="text-sm font-semibold tabular-nums">{total > 0 ? `${pct.toFixed(0)}%` : "—"}</p>
+        <p className="text-xs text-muted">{label}</p>
+        <p className="text-sm font-medium tabular-nums text-ink">
+          {total > 0 ? `${pct.toFixed(0)}%` : "—"}
+        </p>
       </div>
       <Bar pct={pct} />
-      <p className="mt-1 text-[11px] text-neutral-400">
+      <p className="mt-1 text-[11px] text-faint">
         {total > 0 ? `${formatBytes(used)} of ${formatBytes(total)}` : "not available"}
       </p>
-    </div>
+    </Card>
   );
 }

@@ -3,6 +3,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { signIn } from "@/lib/auth-client";
 
 export default function LoginPage() {
@@ -36,55 +37,82 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-lg border border-neutral-200 bg-white p-6 shadow-sm"
-      >
-        <h1 className="text-lg font-semibold">DAEMUN III Admin</h1>
-
-        {error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
-        )}
-
-        <div className="space-y-1">
-          <label htmlFor="email" className="text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+    <div className="flex min-h-screen items-center justify-center bg-wash px-4">
+      <div className="w-full max-w-[400px]">
+        <div className="mb-8 flex items-center gap-2.5">
+          <Image
+            src="/emblem-navy.png"
+            alt="DAEMUN emblem"
+            width={32}
+            height={24}
+            priority
           />
+          <span className="font-custom text-[22px] tracking-[0.08em] text-ink">
+            DAEMUN III
+          </span>
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
-          />
-        </div>
+        <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_1px_3px_rgba(10,20,40,0.05)]">
+          <div className="h-1 bg-gold" aria-hidden />
+          <form onSubmit={handleSubmit} className="space-y-4 p-7">
+            <div>
+              <h1 className="font-custom text-[30px] leading-none tracking-[0.02em] text-ink">
+                Sign in
+              </h1>
+              <p className="mt-1.5 text-[13px] text-muted">
+                Conference admin panel
+              </p>
+            </div>
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {pending ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
+            {error && (
+              <p
+                role="alert"
+                className="rounded-xl bg-[#fdf1f1] px-4 py-3 text-[13px] text-[#b23b3b]"
+              >
+                {error}
+              </p>
+            )}
+
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-[13px] font-medium text-body">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-11 w-full rounded-xl bg-[#f1f1f0] px-4 text-[14px] text-ink outline-none transition-shadow placeholder:text-muted/60 focus:ring-2 focus:ring-brand/40"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-[13px] font-medium text-body">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 w-full rounded-xl bg-[#f1f1f0] px-4 text-[14px] text-ink outline-none transition-shadow placeholder:text-muted/60 focus:ring-2 focus:ring-brand/40"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={pending}
+              className="flex h-11 w-full items-center justify-center rounded-xl bg-navy text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {pending ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

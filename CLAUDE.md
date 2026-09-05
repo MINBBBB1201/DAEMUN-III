@@ -12,6 +12,8 @@
 - **Git 워크플로**: `main`에 직접 커밋·push 금지. 기능 브랜치 → PR → CI(`.github/workflows/ci.yml`: typecheck·lint·build) 통과 → main 기준 rebase → **준원(저장소 오너) 컨펌** → merge. **main 머지는 곧 프로덕션 배포다** (`.github/workflows/deploy.yml`). CI 안 붙이고 임의로 머지하지 말 것.
   - 포크 기여자(쓰기 권한 없음)용 절차: 포크에 push → `gh pr create --repo junwonkim07/DAEMUN-III --head <계정>:<브랜치> --base main` → 첫 기여는 메인테이너가 CI "Approve and run" → `git fetch upstream && git rebase upstream/main` 후 force-push → CI green이면 "머지 준비됨"만 알린다 (머지는 오너가). 리모트 이름(`upstream`/`origin`), `gh` 실행 경로 같은 개인 환경은 이 파일이 아니라 각자 `.claude/settings.local.json`·로컬 메모에 둔다.
   - 스택 브랜치(안 머지된 브랜치 위에서 딴 브랜치): 아래 PR이 머지되기 전엔 위 PR을 열지 말 것. push만 해두고 대기.
+  - **PR 단위 (2026-09-04~)**: 화면·조각 하나마다 올리고 머지 기다리지 말 것. 한 기능 영역(어드민 재설계, 챗봇 등)을 끝까지 구현한 뒤 통합 브랜치로 올려 머지 전에 리뷰받는다. 단 diff가 크면 **큰 PR 하나로 던지지 말고** 관심사별 2~3 PR로 나눠 한꺼번에 올리고 머지 순서를 명시한다 (이 레포는 squash merge라 PR 1개 = main 커밋 1개 = 추적 단위). 커밋은 논리 단위로. 리뷰 요청 전 CI 3종(typecheck·lint·build) green + 로컬에서 화면 클릭 확인(스크린샷 첨부). 리뷰 지적은 같은 브랜치에 fixup 커밋. 고립된 소규모 작업은 화면별 PR로 돌아가도 됨.
+  - **세션 간 파일 소유권**: 병렬 세션이 돌 때 각자 담당 디렉터리만 건드린다. 공유 위험 파일 — `packages/db/drizzle/*`(마이그레이션 번호), `packages/shared/src/schemas.ts`, `apps/api/src/routes/admin.ts`(라우트 등록 목록), `apps/admin/src/components/dashboard-shell.tsx`(NAV) — 은 손대기 전에 다른 세션에 알리고, 나중에 올린 쪽이 리베이스한다.
 - `.claude/settings.json`은 저장소 공용이라 **읽기 전용 명령만** allow한다. 작업 트리를 바꾸는 git 명령이나 DB 스크립트를 무확인 허용하고 싶으면 본인 `.claude/settings.local.json`(gitignore됨)에 넣는다.
 - 줄바꿈은 LF로 고정돼 있다 (`.gitattributes`). Windows에서 `git status`가 레포 전체를 "수정됨"으로 보여주면 `core.autocrlf`를 의심할 것 — 실제 내용 변경이 아닐 가능성이 높다.
 

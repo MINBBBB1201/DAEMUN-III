@@ -15,6 +15,8 @@ import {
   type AdminUser,
 } from "@/lib/accounts";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const GRADE_LABEL = Object.fromEntries(
   GRADE_OPTIONS.map((o) => [o.value, o.label]),
@@ -34,9 +36,9 @@ export function AccountsBoard({ users }: { users: AdminUser[] }) {
   return (
     <div className="space-y-8">
       <section>
-        <div className="mb-2 flex items-baseline gap-2">
-          <h2 className="text-sm font-semibold">Admins</h2>
-          <span className="text-xs text-neutral-400">
+        <div className="mb-2.5 flex items-baseline gap-2">
+          <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">Admins</h2>
+          <span className="text-xs text-faint">
             Have panel access ({admins.length})
           </span>
         </div>
@@ -49,14 +51,14 @@ export function AccountsBoard({ users }: { users: AdminUser[] }) {
       </section>
 
       <section>
-        <div className="mb-2 flex items-baseline gap-2">
-          <h2 className="text-sm font-semibold">Delegates</h2>
-          <span className="text-xs text-neutral-400">
+        <div className="mb-2.5 flex items-baseline gap-2">
+          <h2 className="font-custom text-[17px] tracking-[0.02em] text-ink">Delegates</h2>
+          <span className="text-xs text-faint">
             Self-registered delegates ({delegates.length})
           </span>
         </div>
         {delegates.length === 0 ? (
-          <p className="text-sm text-neutral-400">None yet</p>
+          <p className="text-sm text-faint">None yet</p>
         ) : (
           <div className="space-y-2">
             {delegates.map((u) => (
@@ -87,23 +89,23 @@ function UserRow({ user }: { user: AdminUser }) {
   const isAdmin = user.role === "admin";
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-3">
+    <Card className="p-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium">
+            <span className="truncate text-sm font-medium text-ink">
               {user.name || "(no name)"}
             </span>
             {!user.emailVerified && (
-              <Badge tone="amber">Email unverified</Badge>
+              <Badge tone="gold">Email unverified</Badge>
             )}
             {user.banned && <Badge tone="red">Banned</Badge>}
             {isSelf && <Badge tone="neutral">You</Badge>}
           </div>
-          <div className="truncate text-xs text-neutral-500">{user.email}</div>
+          <div className="truncate text-xs text-muted">{user.email}</div>
         </div>
 
-        <span className="text-xs text-neutral-400">
+        <span className="text-xs text-faint">
           Joined {fmtDate(user.createdAt)}
         </span>
 
@@ -122,7 +124,7 @@ function UserRow({ user }: { user: AdminUser }) {
               )
                 setRole.mutate({ userId: user.id, role: next });
             }}
-            className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50 disabled:opacity-40"
+            className="rounded-lg border border-line px-2 py-1 text-xs text-body hover:bg-wash disabled:opacity-40"
           >
             {isAdmin ? "→ Make delegate" : "→ Make admin"}
           </button>
@@ -132,7 +134,7 @@ function UserRow({ user }: { user: AdminUser }) {
               type="button"
               disabled={busy}
               onClick={() => unban.mutate({ userId: user.id })}
-              className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50 disabled:opacity-40"
+              className="rounded-lg border border-line px-2 py-1 text-xs text-body hover:bg-wash disabled:opacity-40"
             >
               Unban
             </button>
@@ -145,7 +147,7 @@ function UserRow({ user }: { user: AdminUser }) {
                 if (window.confirm(`Ban ${user.email}? (blocks sign-in)`))
                   ban.mutate({ userId: user.id });
               }}
-              className="rounded border border-neutral-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-40"
+              className="rounded-lg border border-line px-2 py-1 text-xs text-[#b23b3b] hover:bg-[#fdf1f1] disabled:opacity-40"
             >
               Ban
             </button>
@@ -154,7 +156,7 @@ function UserRow({ user }: { user: AdminUser }) {
       </div>
 
       {(user.grade || user.committee || user.munExperience) && (
-        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-neutral-500">
+        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted">
           {user.grade && <span>Grade: {GRADE_LABEL[user.grade] ?? user.grade}</span>}
           {user.committee && <span>Committee: {user.committee}</span>}
           {user.munExperience && (
@@ -162,8 +164,8 @@ function UserRow({ user }: { user: AdminUser }) {
           )}
         </div>
       )}
-      {err && <p className="mt-1 text-xs text-red-600">{err}</p>}
-    </div>
+      {err && <p className="mt-1 text-xs text-[#b23b3b]">{err}</p>}
+    </Card>
   );
 }
 
@@ -176,13 +178,9 @@ function AddAdmin() {
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-md border border-dashed border-neutral-300 px-3 py-1.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-neutral-800"
-      >
+      <Button variant="ghost" onClick={() => setOpen(true)}>
         + Add admin
-      </button>
+      </Button>
     );
   }
 
@@ -202,9 +200,9 @@ function AddAdmin() {
           },
         );
       }}
-      className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50/60 p-3"
+      className="space-y-2 rounded-xl border border-line bg-wash/60 p-3"
     >
-      <p className="text-xs font-medium text-neutral-600">New admin account</p>
+      <p className="text-xs font-medium text-body">New admin account</p>
       <div className="grid gap-2 sm:grid-cols-3">
         <input
           type="email"
@@ -212,7 +210,7 @@ function AddAdmin() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded border border-neutral-300 px-2 py-1 text-sm"
+          className="rounded-lg border border-line px-2 py-1 text-sm"
         />
         <input
           type="text"
@@ -220,7 +218,7 @@ function AddAdmin() {
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded border border-neutral-300 px-2 py-1 text-sm"
+          className="rounded-lg border border-line px-2 py-1 text-sm"
         />
         <input
           type="password"
@@ -230,32 +228,24 @@ function AddAdmin() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
-          className="rounded border border-neutral-300 px-2 py-1 text-sm"
+          className="rounded-lg border border-line px-2 py-1 text-sm"
         />
       </div>
-      <p className="text-[11px] text-neutral-400">
+      <p className="text-[11px] text-faint">
         Created ready to sign in immediately, without email verification.
       </p>
       {create.error && (
-        <p className="text-xs text-red-600">
+        <p className="text-xs text-[#b23b3b]">
           {(create.error as Error).message}
         </p>
       )}
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={create.isPending}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-        >
+        <Button type="submit" variant="primary" disabled={create.isPending}>
           {create.isPending ? "Creating…" : "Create"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs"
-        >
+        </Button>
+        <Button type="button" onClick={() => setOpen(false)}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -266,15 +256,15 @@ function Badge({
   tone,
 }: {
   children: React.ReactNode;
-  tone: "amber" | "red" | "neutral";
+  tone: "gold" | "red" | "neutral";
 }) {
   return (
     <span
       className={cn(
         "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-        tone === "amber" && "bg-amber-100 text-amber-700",
-        tone === "red" && "bg-red-100 text-red-700",
-        tone === "neutral" && "bg-neutral-200 text-neutral-600",
+        tone === "gold" && "bg-gold-soft/25 text-[#8a6a2c]",
+        tone === "red" && "bg-[#fdf1f1] text-[#b23b3b]",
+        tone === "neutral" && "bg-line text-body",
       )}
     >
       {children}
