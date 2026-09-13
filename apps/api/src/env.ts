@@ -58,12 +58,17 @@ export const env = {
    * 둘 다 없으면 엔드포인트는 503과 안내 문구를 돌려준다 — 키 없이도 나머지는 동작.
    * 무료 키: https://aistudio.google.com/apikey
    *
-   * 모델 기본값 `gemini-2.5-flash` — 무료 티어에 있고 성숙해서 가용성이 안정적.
-   * (flash-lite-latest = 최신 모델이라 "high demand" 503이 잦음.) GEMINI_MODEL로 교체.
+   * 모델 기본값 `gemini-3.5-flash-lite` — 챗봇이 단순 안내·FAQ 응답만 하므로
+   * 가장 가벼운 모델로 충분하고, 실제 한국어 품질(FAQ 근거 답변·잡담·인젝션
+   * 방어)을 직접 검증했다. 다른 무료 후보(Gemma, Groq의 오픈모델 등)는 한글
+   * 입력을 깨뜨리거나 엉뚱한 답을 만드는 문제가 있어 제외 — 모델을 바꾸면
+   * docs/chatbot-eval.md로 반드시 재검증할 것. 별칭(-latest)은 피하고 고정
+   * 버전을 쓴다 — 예전에 `flash-lite-latest`가 최신 모델을 가리켜 "high
+   * demand" 503이 잦았다. GEMINI_MODEL로 교체 가능.
    */
   gemini: {
     apiKey: process.env.GEMINI_API_KEY ?? "",
-    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite",
   },
 
   /**
